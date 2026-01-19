@@ -1,0 +1,22 @@
+POST http://127.0.0.1:8000/items/
+
+{
+  "name": "T-shirt",
+  "description": "White",
+  "price": 150,
+  "tax": 0
+}
+
+###
+GET http://127.0.0.1:8000/items/
+###
+PUT http://127.0.0.1:8000/items/2
+
+ {
+    "name": "T-shirt",
+    "description": "White",
+    "price": 300.0,
+    "tax": 21,
+    "tags": [],
+    "id": 2
+  }
