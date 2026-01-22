@@ -1,0 +1,29 @@
+POST http://127.0.0.1:8000/items/
+
+{
+  "pname": "shoes",
+  "price": "400",
+  "description": "good quality",
+  "categoryID": 7,
+  "uid": 4,
+  "tags": []
+}
+
+###
+GET http://127.0.0.1:8000/items/
+
+###
+PUT http://127.0.0.1:8000/items/
+
+{
+  "pname": "shoes",
+  "price": "255",
+  "description": "้blue",
+  "categoryID": 7,
+  "uid": 4,
+  "tags": []
+}
+
+###
+con
+DELETE 
