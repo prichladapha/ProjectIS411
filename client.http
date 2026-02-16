@@ -2,118 +2,116 @@
 POST http://127.0.0.1:8000/products/
 
 {
-  "pname": "นาฬิกา Casio Vintage",
-  "price": 650,
-  "brand": "Casio",
-  "description": "สภาพดี ใช้งานปกติ มีรอยเล็กน้อย",
+  "pname": "กระเป๋า Coach หนังแท้ สีดำ",
+  "price": 3500,
+  "brand": "Coach",
+  "description": "กระเป๋าหนังแท้ สภาพ 90% มีรอยเล็กน้อยที่มุม",
   "categoryID": 5,
-  "seller_id": 109,
-  "tags": "นาฬิกา, Casio, Vintage",
+  "seller_id": 2,
+  "tags": "กระเป๋า, coach, หนังแท้",
   "product_status": "available"
 }
+
+###get product by id
+GET http://127.0.0.1:8000/products/21
 
 ###get all products
 GET http://127.0.0.1:8000/products/
 
-###get product by id
-GET http://127.0.0.1:8000/products/9
-
 ###อัพเดต product
-PUT http://127.0.0.1:8000/products/10
+PUT http://127.0.0.1:8000/products/18
 
 {
-  "pname": "เป๋าน้องผัก",
+  "pname": "กระเป๋า Coach มือสอง",
   "price": null,
   "brand": "",
   "description": "",
   "categoryID": 0,
-  "uid": 0,
+  "seller_id": 0,
   "tags": "",
-  "status": ""
+  "product_status": ""
 }
-
-###Customer 
-POST http://127.0.0.1:8000/customers/
-
-{
-  "username": "bamboo",
-  "email": "bamboo_k@gmail.com",
-  "customer_phone": "0822222222"
-}
-
-###Get all customers
-GET http://127.0.0.1:8000/customers/
-
-###Get customer by id
-GET http://127.0.0.1:8000/customers/1
 
 ###Create order
 POST http://127.0.0.1:8000/create-order/
 
 {
-  "cus_id": 1,
+  "cus_id": 4,
   "items": [
     {
-      "product_id": 6,
+      "product_id": 13,
       "qty": 1
     },
     {
-      "product_id": 7,
+      "product_id": 2,
       "qty": 1
     },
     {
-      "product_id": 8,
-      "qty": 1
-    },
-    {
-      "product_id": 9,
+      "product_id": 10,
       "qty": 1
     }
   ],
-  "shipping_cost": 50
+  "shipping_cost": 45
 }
-
-### Cancel Order
-PUT http://127.0.0.1:8000/orders/15/cancel
-
-###เปลี่ยนสถานะ order (confirmed, shipping, delivery)
-PATCH http://127.0.0.1:8000/orders/5/status?status=cancelled
 
 ### Get all order 
 GET http://127.0.0.1:8000/orders
 
-###get order + item
-GET http://127.0.0.1:8000/order_items/8
+### Get order by ID
+GET http://127.0.0.1:8000/orders/16
 
+###get order + item
+GET http://127.0.0.1:8000/order_items/16
+
+### Cancel Order
+PUT http://127.0.0.1:8000/orders/16/cancel
+
+###เปลี่ยนสถานะ order (confirmed, shipping, delivery)
+PATCH http://127.0.0.1:8000/orders/16/status?status=cancelled
 
 
 ###Payments
 POST http://127.0.0.1:8000/payments/
 
 {
-  "order_id": 4,
-  "payment_method": "cash",
-  "payment_amount": 2100.00,
+  "order_id": 7,
+  "payment_method": "qr_code",
+  "payment_amount": 2640.00,
   "payment_status": "success",
-  "payment_date": "2026-02-15T16:40:00",
-  "transaction_no": "TXN99887769"
+  "payment_date": "2026-02-16T11:30:00",
+  "transaction_no": "TXN20014568"
 }
 
 ### Get all payments
 GET http://127.0.0.1:8000/payments/
 
 ### Get payment by id
-GET http://127.0.0.1:8000/payments/2
+GET http://127.0.0.1:8000/payments/4
 
+
+###Customer 
+POST http://127.0.0.1:8000/customers/
+
+{
+  "username": "namfon_shop",
+  "email": "namfon.k@gmail.com",
+  "customer_phone": "0878888888"
+}
+
+###Get all customers
+GET http://127.0.0.1:8000/customers/
+
+###Get customer by id
+GET http://127.0.0.1:8000/customers/10
 
 ###Seller
 POST http://127.0.0.1:8000/sellers/
 
 {
-  "seller_name": "David Tan",
-  "email": "davidtan@gmail.com",
-  "seller_phone": "0823456789",
-  "store_name": "Tan Tech Store",
+  "seller_name": "Namfon Kanyarat",
+  "email": "namfon.boutique@gmail.com",
+  "seller_phone": "0855678901",
+  "store_name": "Namfon Boutique",
   "verification_status": "verified"
 }
 
@@ -124,12 +122,12 @@ GET http://127.0.0.1:8000/sellers/
 GET http://127.0.0.1:8000/sellers/2
 
 ###Search product
-#ค้นหาทั่วไป + Sort ราคาต่ำ → สูง
+#ค้นหาทั่วไป + Sort ราคาต่ำ - สูง
 POST http://127.0.0.1:8000/products/search
 
 {
   "query": "เสื้อ",
-  "sort_by": "price_high",
+  "sort_by": "price_low",
   "page": 1,
   "page_size": 20
 }
@@ -138,7 +136,7 @@ POST http://127.0.0.1:8000/products/search
 POST http://127.0.0.1:8000/products/search
 
 {
-  "brand": "Adidas",
+  "brand": "Uniqlo",
   "page": 1
 }
 
@@ -146,7 +144,7 @@ POST http://127.0.0.1:8000/products/search
 POST http://127.0.0.1:8000/products/search
 
 {
-  "category_id": 2,
+  "category_id": 1,
   "sort_by": "price_high",
   "page": 1
 }
@@ -155,7 +153,7 @@ POST http://127.0.0.1:8000/products/search
 POST http://127.0.0.1:8000/products/search
 
 {
-  "tags": ["vintage", "streetwear"],
+  "tags": ["vintage", "หมวก"],
   "sort_by": "newest",
   "page": 1
 }
