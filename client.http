@@ -1,29 +1,161 @@
-POST http://127.0.0.1:8000/items/
+### post Product
+POST http://127.0.0.1:8000/products/
 
 {
-  "pname": "shoes",
-  "price": "400",
-  "description": "good quality",
-  "categoryID": 7,
-  "uid": 4,
-  "tags": []
+  "pname": "นาฬิกา Casio Vintage",
+  "price": 650,
+  "brand": "Casio",
+  "description": "สภาพดี ใช้งานปกติ มีรอยเล็กน้อย",
+  "categoryID": 5,
+  "seller_id": 109,
+  "tags": "นาฬิกา, Casio, Vintage",
+  "product_status": "available"
 }
 
-###
-GET http://127.0.0.1:8000/items/
+###get all products
+GET http://127.0.0.1:8000/products/
 
-###
-PUT http://127.0.0.1:8000/items/
+###get product by id
+GET http://127.0.0.1:8000/products/9
+
+###อัพเดต product
+PUT http://127.0.0.1:8000/products/10
 
 {
-  "pname": "shoes",
-  "price": "255",
-  "description": "้blue",
-  "categoryID": 7,
-  "uid": 4,
-  "tags": []
+  "pname": "เป๋าน้องผัก",
+  "price": null,
+  "brand": "",
+  "description": "",
+  "categoryID": 0,
+  "uid": 0,
+  "tags": "",
+  "status": ""
 }
 
-###
-con
-DELETE 
+###Customer 
+POST http://127.0.0.1:8000/customers/
+
+{
+  "username": "bamboo",
+  "email": "bamboo_k@gmail.com",
+  "customer_phone": "0822222222"
+}
+
+###Get all customers
+GET http://127.0.0.1:8000/customers/
+
+###Get customer by id
+GET http://127.0.0.1:8000/customers/1
+
+###Create order
+POST http://127.0.0.1:8000/create-order/
+
+{
+  "cus_id": 1,
+  "items": [
+    {
+      "product_id": 6,
+      "qty": 1
+    },
+    {
+      "product_id": 7,
+      "qty": 1
+    },
+    {
+      "product_id": 8,
+      "qty": 1
+    },
+    {
+      "product_id": 9,
+      "qty": 1
+    }
+  ],
+  "shipping_cost": 50
+}
+
+### Cancel Order
+PUT http://127.0.0.1:8000/orders/15/cancel
+
+###เปลี่ยนสถานะ order (confirmed, shipping, delivery)
+PATCH http://127.0.0.1:8000/orders/5/status?status=cancelled
+
+### Get all order 
+GET http://127.0.0.1:8000/orders
+
+###get order + item
+GET http://127.0.0.1:8000/order_items/8
+
+
+
+###Payments
+POST http://127.0.0.1:8000/payments/
+
+{
+  "order_id": 4,
+  "payment_method": "cash",
+  "payment_amount": 2100.00,
+  "payment_status": "success",
+  "payment_date": "2026-02-15T16:40:00",
+  "transaction_no": "TXN99887769"
+}
+
+### Get all payments
+GET http://127.0.0.1:8000/payments/
+
+### Get payment by id
+GET http://127.0.0.1:8000/payments/2
+
+
+###Seller
+POST http://127.0.0.1:8000/sellers/
+
+{
+  "seller_name": "David Tan",
+  "email": "davidtan@gmail.com",
+  "seller_phone": "0823456789",
+  "store_name": "Tan Tech Store",
+  "verification_status": "verified"
+}
+
+###Get all sellers
+GET http://127.0.0.1:8000/sellers/
+
+###Get seller by id
+GET http://127.0.0.1:8000/sellers/2
+
+###Search product
+#ค้นหาทั่วไป + Sort ราคาต่ำ → สูง
+POST http://127.0.0.1:8000/products/search
+
+{
+  "query": "เสื้อ",
+  "sort_by": "price_high",
+  "page": 1,
+  "page_size": 20
+}
+
+### Filter by Brand
+POST http://127.0.0.1:8000/products/search
+
+{
+  "brand": "Adidas",
+  "page": 1
+}
+
+###Filter by Category
+POST http://127.0.0.1:8000/products/search
+
+{
+  "category_id": 2,
+  "sort_by": "price_high",
+  "page": 1
+}
+
+###Filter by Tags
+POST http://127.0.0.1:8000/products/search
+
+{
+  "tags": ["vintage", "streetwear"],
+  "sort_by": "newest",
+  "page": 1
+}
