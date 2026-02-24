@@ -1,0 +1,468 @@
+### สร้าง region กรุงเทพมหานคร ปทุมธานี กาญจนบุรี
+POST http://127.0.0.1:8000/regions
+
+{
+    "name_th": "กรุงเทพมหานคร",
+    "total_population": 10500000
+  }
+
+###
+POST http://127.0.0.1:8000/regions
+
+{
+    "name_th": "กาญจนบุรี",
+    "total_population": 890000
+  }
+
+###
+GET http://127.0.0.1:8000/regions
+
+### สร้าง constituencies 
+### กทม เขต 1
+POST http://127.0.0.1:8000/constituencies
+
+{
+  "region_id": 1,
+  "const_number": 1,
+  "total_eligible_voters": 50000
+}
+
+### กทม เขต 2
+POST http://127.0.0.1:8000/constituencies
+
+{
+  "region_id": 1,
+  "const_number": 2,
+  "total_eligible_voters": 57000
+}
+
+### กาญ เขต 1
+POST http://127.0.0.1:8000/constituencies
+
+{
+  "region_id": 2,
+  "const_number": 1,
+  "total_eligible_voters": 36000
+}
+
+### 1) เพิ่ม/แสดง พรรคการเมือง และผู้สมัคร ส.ส. เขต
+### (อย่างน้อย 2 เขต เขตละ 3 พรรค/ผู้สมัคร)
+# เพิ่มพรรคการเมือง
+POST http://127.0.0.1:8000/parties
+
+{
+  "party_name": "เพื่อพี่แจมิน",
+  "party_leader": "น้ำผัก รักพี่",
+  "party_logo_url": "https://example.com/ptp.png"
+}
+
+###
+POST http://127.0.0.1:8000/parties
+
+{
+  "party_name": "พัฒนาเพื่อน้องอินจุน",
+  "party_leader": "ลี เจน",
+  "party_logo_url": "https://example.com/ptp.png"
+}
+
+###
+POST http://127.0.0.1:8000/parties
+
+{
+  "party_name": "อยากเห็นคนไทยเป็นสาววาย",
+  "party_leader": "สาววาย ชิปโน่เหรินมิน",
+  "party_logo_url": "https://example.com/ptp.png"
+}
+
+### แสดงรายชื่อพรรคการเมืองทั้งหมด
+GET http://127.0.0.1:8000/parties
+
+### แสดงข้อมูลพรรคการเมืองตาม id
+GET http://127.0.0.1:8000/parties/1
+
+### เพิ่มผู้สมัคร ส.ส.เขต 1 กทม พรรคเพื่อพี่แจมิน 
+POST http://127.0.0.1:8000/candidates
+
+{
+  "const_id": 1,
+  "party_id": 1,
+  "candidate_number": 1,
+  "full_name": "นายสมชาย ใจดี"
+}
+
+### เพิ่มผู้สมัคร ส.ส.เขต 1 กทม พรรคพัฒนาเพื่อน้องอินจุน
+POST http://127.0.0.1:8000/candidates
+
+{
+  "const_id": 1,
+  "party_id": 2,
+  "candidate_number": 2,
+  "full_name": "นางสาวสุดา มีสุข"
+}
+
+### เพิ่มผู้สมัคร ส.ส.เขต 1 กทม พรรคอยากเห็นคนไทยเป็นสาววาย
+POST http://127.0.0.1:8000/candidates
+
+{
+  "const_id": 1,
+  "party_id": 3,
+  "candidate_number": 3,
+  "full_name": "นายประยงค์ รักชาติ"
+}
+
+### เพิ่มผู้สมัคร ส.ส.เขต 2 กทม พรรคเพื่อพี่แจมิน 
+POST http://127.0.0.1:8000/candidates
+
+{
+  "const_id": 2,
+  "party_id": 1,
+  "candidate_number": 1,
+  "full_name": "นางวิไล สว่างใจ"
+}
+
+### เพิ่มผู้สมัคร ส.ส.เขต 2 กทม พรรคพัฒนาเพื่อน้องอินจุน
+POST http://127.0.0.1:8000/candidates
+
+{
+  "const_id": 2,
+  "party_id": 2,
+  "candidate_number": 2,
+  "full_name": "นายธนกฤต พัฒนา"
+}
+
+### เพิ่มผู้สมัคร ส.ส.เขต 2 กทม พรรคอยากเห็นคนไทยเป็นสาววาย
+POST http://127.0.0.1:8000/candidates
+
+{
+  "const_id": 2,
+  "party_id": 3,
+  "candidate_number": 3,
+  "full_name": "นายชาติชาย อนุไทย"
+}
+
+### แสดงผู้สมัครทั้งหมด
+GET http://127.0.0.1:8000/candidates
+
+### แสดงผู้สมัคร เขต 1 
+GET http://127.0.0.1:8000/candidates?const_id=1
+
+### แสดงผู้สมัคร เขต 2
+GET http://127.0.0.1:8000/candidates?const_id=2
+
+### 2) เพิ่ม/แสดง ผู้มีสิทธิ์เลือกตั้ง (อย่างน้อย 20 คน) และอัพเดทสถานะการลงคะแนน
+### เพิ่มผู้มีสิทธิ์ กทม
+### เพิ่มผู้มีสิทธิ์คนที่ 1 (เขต 1)
+POST http://127.0.0.1:8000/voters
+
+{ "citizen_id": "1100100000001",
+ "full_name": "นายอนันต์ สุขใจ",
+  "const_id": 1 }
+
+### เพิ่มผู้มีสิทธิ์คนที่ 2 (เขต 1)
+POST http://127.0.0.1:8000/voters
+
+{ "citizen_id": "1100100000002",
+ "full_name": "นางสาวบุษบา ดีงาม",
+  "const_id": 1 }
+
+### เพิ่มผู้มีสิทธิ์คนที่ 3 (เขต 1)
+POST http://127.0.0.1:8000/voters
+
+{ "citizen_id": "1100100000003",
+ "full_name": "นายคมกฤช มีแรง",
+  "const_id": 1 }
+
+### เพิ่มผู้มีสิทธิ์คนที่ 4 (เขต 1)
+POST http://127.0.0.1:8000/voters
+
+{ "citizen_id": "1100100000004",
+ "full_name": "นางดวงใจ รักไทย",
+  "const_id": 1 }
+
+### เพิ่มผู้มีสิทธิ์คนที่ 5 (เขต 1)
+POST http://127.0.0.1:8000/voters
+
+{ "citizen_id": "1100100000005",
+ "full_name": "นายเอกชัย พานิช",
+  "const_id": 1 }
+
+### เพิ่มผู้มีสิทธิ์คนที่ 6 (เขต 1)
+POST http://127.0.0.1:8000/voters
+
+{ "citizen_id": "1100100000006",
+ "full_name": "นางฟ้าใส ชนะใจ",
+  "const_id": 1 }
+
+### เพิ่มผู้มีสิทธิ์คนที่ 7 (เขต 1)
+POST http://127.0.0.1:8000/voters
+
+{ "citizen_id": "1100100000007",
+ "full_name": "นายกิตติ วงศ์ดี",
+  "const_id": 1 }
+
+### เพิ่มผู้มีสิทธิ์คนที่ 1 (เขต 2)
+POST http://127.0.0.1:8000/voters
+
+{ "citizen_id": "1100100000008",
+ "full_name": "นางสาวหทัย สดใส",
+  "const_id": 2 }
+
+### เพิ่มผู้มีสิทธิ์คนที่ 2 (เขต 2)
+POST http://127.0.0.1:8000/voters
+
+{ "citizen_id": "1100100000009",
+ "full_name": "นายไพรัช มั่นคง",
+  "const_id": 2 }
+
+### เพิ่มผู้มีสิทธิ์คนที่ 3 (เขต 2)
+POST http://127.0.0.1:8000/voters
+
+{ "citizen_id": "1100100000010",
+ "full_name": "นางสาวสุภาพร ใจเย็น",
+  "const_id": 2 }
+
+### เพิ่มผู้มีสิทธิ์คนที่ 4 (เขต 2)
+POST http://127.0.0.1:8000/voters
+
+{ "citizen_id": "1100100000011",
+ "full_name": "นายปริญญา เก่งกาจ",
+  "const_id": 2 }
+
+### เพิ่มผู้มีสิทธิ์คนที่ 5 (เขต 2)
+POST http://127.0.0.1:8000/voters
+
+{ "citizen_id": "1100100000012",
+ "full_name": "นางมาลี สวยงาม",
+  "const_id": 2 }
+
+### เพิ่มผู้มีสิทธิ์คนที่ 6 (เขต 2)
+POST http://127.0.0.1:8000/voters
+
+{ "citizen_id": "1100100000013",
+ "full_name": "นายณัฐวุฒิ อาจหาญ",
+  "const_id": 2 }
+
+### เพิ่มผู้มีสิทธิ์คนที่ 7 (เขต 2)
+POST http://127.0.0.1:8000/voters
+
+{ "citizen_id": "1100100000014",
+ "full_name": "นางสาวกรนิช ขันทอง",
+  "const_id": 2 }
+
+### กาญจนบุรี
+### เพิ่มผู้มีสิทธิ์คนที่ 1 (เขต 1 )
+POST http://127.0.0.1:8000/voters
+
+{ "citizen_id": "1100100000015",
+ "full_name": "นางสาวพิมพ์ชนก วิริยะ",
+  "const_id": 3 }
+
+### เพิ่มผู้มีสิทธิ์คนที่ 2 (เขต 3)
+POST http://127.0.0.1:8000/voters
+
+{ "citizen_id": "1100100000016",
+ "full_name": "นายอภิสิทธิ์ ล้านนา",
+  "const_id": 3 }
+
+### เพิ่มผู้มีสิทธิ์คนที่ 3 (เขต 3)
+POST http://127.0.0.1:8000/voters
+
+{ "citizen_id": "1100100000017",
+ "full_name": "นางอรพิน กาญจนา",
+  "const_id": 3 }
+
+### เพิ่มผู้มีสิทธิ์คนที่ 4 (เขต 3)
+POST http://127.0.0.1:8000/voters
+
+{ "citizen_id": "1100100000018",
+ "full_name": "นายสถิตย์ สงบสุข",
+  "const_id": 3 }
+
+### เพิ่มผู้มีสิทธิ์คนที่ 5 (เขต 3)
+POST http://127.0.0.1:8000/voters
+
+{ "citizen_id": "1100100000019",
+ "full_name": "นางสาวปัทมาวดี รุ่งเรือง",
+  "const_id": 3 }
+
+### เพิ่มผู้มีสิทธิ์คนที่ 6 (เขต 3)
+POST http://127.0.0.1:8000/voters
+
+{ "citizen_id": "1100100000020",
+ "full_name": "นายวุฒิพงษ์ ฐานดี",
+  "const_id": 3 }
+
+### เพิ่มผู้มีสิทธิ์คนที่ 7 (เขต 3)
+POST http://127.0.0.1:8000/voters
+
+{ "citizen_id": "1100100000021",
+ "full_name": "นางสาวกัลยา สุวรรณ",
+  "const_id": 3 }
+
+
+### แสดงรายชื่อผู้มีสิทธิ์เลือกตั้งทั้งหมด
+GET http://127.0.0.1:8000/voters
+
+### แสดงรายชื่อผู้มีสิทธิ์เฉพาะเขต 1
+GET http://127.0.0.1:8000/voters?const_id=1
+
+### แสดงรายชื่อผู้มีสิทธิ์เฉพาะเขต 2
+GET http://127.0.0.1:8000/voters?const_id=2
+
+### อัพเดทสถานะของ voter_id=1 ที่ลงคะแนนทั้งสองแบบแล้ว
+PATCH http://127.0.0.1:8000/voters/1/status
+
+{
+  "has_voted_const": 1,
+  "has_voted_list": 1
+}
+
+###  ดูข้อมูล voter_id=1 หลังอัพเดท
+GET http://127.0.0.1:8000/voters/1
+
+### อัพเดทสถานะ voter_id=2 ลงคะแนนเฉพาะเขต
+PATCH http://127.0.0.1:8000/voters/2/status
+
+{
+  "has_voted_const": 1
+}
+
+###
+
+### อัพเดทสถานะ voter_id=3 ลงคะแนนเฉพาะพรรค
+PATCH http://127.0.0.1:8000/voters/3/status
+
+{
+  "has_voted_list": 1
+}
+
+### 3) บันทึกการลงคะแนนแบบไม่ระบุตัวตน และแสดงจํานวนผู้ลงคะแนนแยกตามเขต
+### ลงคะแนน ส.ส.
+### ลงคะแนน ส.ส. กทม เขต 1  นายสมชาย (candidate_id=1)
+POST http://127.0.0.1:8000/ballots
+
+{ "const_id": 1,
+ "candidate_id": 1,
+  "vote_type": "Constituency" }
+
+### ลงคะแนน ส.ส. กทม เขต 1  นางสาวสุดา (candidate_id=2)
+POST http://127.0.0.1:8000/ballots
+
+{ "const_id": 1,
+ "candidate_id": 2,
+  "vote_type": "Constituency" }
+
+### ลงคะแนน ส.ส. กทม เขต 1  นายประยงค์ (candidate_id=3)
+POST http://127.0.0.1:8000/ballots
+
+{ "const_id": 1,
+ "candidate_id": 3,
+  "vote_type": "Constituency" }
+
+### ลงคะแนน ส.ส.กทม เขต 1  Vote No 
+POST http://127.0.0.1:8000/ballots
+
+{ "const_id": 1,
+ "vote_type": "Constituency" }
+
+### ลงคะแนน ส.ส. กทม เขต 2  นางวิไล (candidate_id=4)
+POST http://127.0.0.1:8000/ballots 
+
+{ "const_id": 2,
+ "candidate_id": 4,
+  "vote_type": "Constituency" }
+
+### ลงคะแนน ส.ส. กทม เขต 2  นายธนกฤต (candidate_id=5)
+POST http://127.0.0.1:8000/ballots 
+
+{ "const_id": 2,
+ "candidate_id": 5,
+  "vote_type": "Constituency" }
+
+### ลงคะแนน ส.ส. กทม เขต 2  นายชาติชาย (candidate_id=6)
+POST http://127.0.0.1:8000/ballots 
+
+{ "const_id": 2,
+ "candidate_id": 6,
+  "vote_type": "Constituency" }
+
+### ลงคะแนนพรรค 
+### ลงคะแนนพรรค กทม เขต 1  พรรคเพื่อพี่แจมิน (party_id=1)
+POST http://127.0.0.1:8000/ballots
+
+{ "const_id": 1,
+ "party_id": 1,
+  "vote_type": "PartyList" }
+
+### ลงคะแนนพรรค กทม เขต 1 พรรคพัฒนาเพื่อน้องอินจุน (party_id=2)
+POST http://127.0.0.1:8000/ballots
+
+{ "const_id": 1,
+ "party_id": 2,
+  "vote_type": "PartyList" }
+
+### ลงคะแนนพรรค กทม เขต 1 พรรคอยากเห็นคนไทยเป็นสาววาย (party_id=3)
+POST http://127.0.0.1:8000/ballots
+
+{ "const_id": 1,
+ "party_id": 3,
+  "vote_type": "PartyList" }
+
+### ลงคะแนนพรรค กทม เขต 2  พรรคเพื่อพี่แจมิน (party_id=1)
+POST http://127.0.0.1:8000/ballots
+
+{ "const_id": 2,
+ "party_id": 1,
+  "vote_type": "PartyList" }
+
+### ลงคะแนนพรรค กทม เขต 2 พรรคพัฒนาเพื่อน้องอินจุน (party_id=2)
+POST http://127.0.0.1:8000/ballots
+
+{ "const_id": 2,
+ "party_id": 2,
+  "vote_type": "PartyList" }
+
+### ลงคะแนนพรรค กทม เขต 2 พรรคอยากเห็นคนไทยเป็นสาววาย (party_id=3)
+POST http://127.0.0.1:8000/ballots
+
+{ "const_id": 2,
+ "party_id": 3,
+  "vote_type": "PartyList" }
+
+### ลงคะแนนพรรค กาญ เขต 1  พรรคเพื่อพี่แจมิน (party_id=1)
+POST http://127.0.0.1:8000/ballots
+
+{ "const_id": 3,
+ "party_id": 1,
+  "vote_type": "PartyList" }
+
+### ลงคะแนนพรรค กาญ เขต 1 พรรคพัฒนาเพื่อน้องอินจุน (party_id=2)
+POST http://127.0.0.1:8000/ballots
+
+{ "const_id": 3,
+ "party_id": 2,
+  "vote_type": "PartyList" }
+
+### ลงคะแนนพรรค กาญ เขต 1 พรรคอยากเห็นคนไทยเป็นสาววาย (party_id=3)
+POST http://127.0.0.1:8000/ballots
+
+{ "const_id": 3,
+ "party_id": 3,
+  "vote_type": "PartyList" }
+
+
+### แสดงสรุปจํานวนผู้ลงคะแนนแยกตามเขต (ทั้งแบบเขตและพรรค)
+GET http://127.0.0.1:8000/ballots/summary
+
+### 4) แสดงผลการเลือกตั้ง
+### ผลเลือกตั้งพรรค ทั้งประเทศ
+GET http://127.0.0.1:8000/results/partylist
+
+### ผลเลือกตั้งพรรค แยกตามเขต
+GET http://127.0.0.1:8000/results/partylist/by-constituency
+
+### ผลเลือกตั้ง ส.ส.เขต ทั้งประเทศ
+GET http://127.0.0.1:8000/results/constituency
+
+### ผลเลือกตั้ง ส.ส.เขต แยกตามเขต
+GET http://127.0.0.1:8000/results/constituency/by-constituency
