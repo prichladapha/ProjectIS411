@@ -1,0 +1,159 @@
+### post Product
+POST http://127.0.0.1:8000/products/
+
+{
+  "pname": "กระเป๋า Coach หนังแท้ สีดำ",
+  "price": 3500,
+  "brand": "Coach",
+  "description": "กระเป๋าหนังแท้ สภาพ 90% มีรอยเล็กน้อยที่มุม",
+  "categoryID": 5,
+  "seller_id": 2,
+  "tags": "กระเป๋า, coach, หนังแท้",
+  "product_status": "available"
+}
+
+###get product by id
+GET http://127.0.0.1:8000/products/21
+
+###get all products
+GET http://127.0.0.1:8000/products/
+
+###อัพเดต product
+PUT http://127.0.0.1:8000/products/18
+
+{
+  "pname": "กระเป๋า Coach มือสอง",
+  "price": null,
+  "brand": "",
+  "description": "",
+  "categoryID": 0,
+  "seller_id": 0,
+  "tags": "",
+  "product_status": ""
+}
+
+###Create order
+POST http://127.0.0.1:8000/create-order/
+
+{
+  "cus_id": 4,
+  "items": [
+    {
+      "product_id": 13,
+      "qty": 1
+    },
+    {
+      "product_id": 2,
+      "qty": 1
+    },
+    {
+      "product_id": 10,
+      "qty": 1
+    }
+  ],
+  "shipping_cost": 45
+}
+
+### Get all order 
+GET http://127.0.0.1:8000/orders
+
+### Get order by ID
+GET http://127.0.0.1:8000/orders/16
+
+###get order + item
+GET http://127.0.0.1:8000/order_items/16
+
+### Cancel Order
+PUT http://127.0.0.1:8000/orders/16/cancel
+
+###เปลี่ยนสถานะ order (confirmed, shipping, delivery)
+PATCH http://127.0.0.1:8000/orders/16/status?status=cancelled
+
+
+###Payments
+POST http://127.0.0.1:8000/payments/
+
+{
+  "order_id": 7,
+  "payment_method": "qr_code",
+  "payment_amount": 2640.00,
+  "payment_status": "success",
+  "payment_date": "2026-02-16T11:30:00",
+  "transaction_no": "TXN20014568"
+}
+
+### Get all payments
+GET http://127.0.0.1:8000/payments/
+
+### Get payment by id
+GET http://127.0.0.1:8000/payments/4
+
+
+###Customer 
+POST http://127.0.0.1:8000/customers/
+
+{
+  "username": "namfon_shop",
+  "email": "namfon.k@gmail.com",
+  "customer_phone": "0878888888"
+}
+
+###Get all customers
+GET http://127.0.0.1:8000/customers/
+
+###Get customer by id
+GET http://127.0.0.1:8000/customers/10
+
+###Seller
+POST http://127.0.0.1:8000/sellers/
+
+{
+  "seller_name": "Namfon Kanyarat",
+  "email": "namfon.boutique@gmail.com",
+  "seller_phone": "0855678901",
+  "store_name": "Namfon Boutique",
+  "verification_status": "verified"
+}
+
+###Get all sellers
+GET http://127.0.0.1:8000/sellers/
+
+###Get seller by id
+GET http://127.0.0.1:8000/sellers/2
+
+###Search product
+#ค้นหาทั่วไป + Sort ราคาต่ำ - สูง
+POST http://127.0.0.1:8000/products/search
+
+{
+  "query": "เสื้อ",
+  "sort_by": "price_low",
+  "page": 1,
+  "page_size": 20
+}
+
+### Filter by Brand
+POST http://127.0.0.1:8000/products/search
+
+{
+  "brand": "Uniqlo",
+  "page": 1
+}
+
+###Filter by Category
+POST http://127.0.0.1:8000/products/search
+
+{
+  "category_id": 1,
+  "sort_by": "price_high",
+  "page": 1
+}
+
+###Filter by Tags
+POST http://127.0.0.1:8000/products/search
+
+{
+  "tags": ["vintage", "หมวก"],
+  "sort_by": "newest",
+  "page": 1
+}
