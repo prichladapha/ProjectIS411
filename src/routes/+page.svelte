@@ -27,54 +27,51 @@
     </div>
 
     <p class="is-size-5 has-text-weight-bold mt-3">Category</p>
-    
-  </div>
-</section>
 
-
-<div class="field is-grouped is-grouped-centered mt-2">
-  <div class="control">
+<div class="columns is-mobile is-variable is-2 mt-4">
+  <div class="column">
     <button 
-      class="button is-white is-rounded {activeCategory === 'SHIRT' ? 'is-warning has-text-weight-bold' : ''}"
+      class="button is-white is-rounded is-fullwidth {activeCategory === 'SHIRT' ? 'is-warning has-text-weight-bold' : ''}"
       on:click={() => activeCategory = 'SHIRT'}
     >
       Shirt
     </button>
   </div>
-  <div class="control">
+  <div class="column">
     <button 
-      class="button is-white is-rounded {activeCategory === 'TROUSERS' ? 'is-warning has-text-weight-bold' : ''}"
+      class="button is-white is-rounded is-fullwidth {activeCategory === 'TROUSERS' ? 'is-warning has-text-weight-bold' : ''}"
       on:click={() => activeCategory = 'TROUSERS'}
     >
       Trouser
     </button>
   </div>
-  <div class="control">
+  <div class="column">
     <button 
-      class="button is-white is-rounded {activeCategory === 'SKIRT' ? 'is-warning has-text-weight-bold' : ''}"
+      class="button is-white is-rounded is-fullwidth {activeCategory === 'SKIRT' ? 'is-warning has-text-weight-bold' : ''}"
       on:click={() => activeCategory = 'SKIRT'}
     >
       Skirt
     </button>
   </div>
-  <div class="control">
+  <div class="column">
     <button 
-      class="button is-white is-rounded {activeCategory === 'SHOES' ? 'is-warning has-text-weight-bold' : ''}"
+      class="button is-white is-rounded is-fullwidth {activeCategory === 'SHOES' ? 'is-warning has-text-weight-bold' : ''}"
       on:click={() => activeCategory = 'SHOES'}
     >
       Shoes
     </button>
   </div>
-  <div class="control">
+  <div class="column">
     <button 
-      class="button is-white is-rounded {activeCategory === 'OTHERS' ? 'is-warning has-text-weight-bold' : ''}"
+      class="button is-white is-rounded is-fullwidth {activeCategory === 'OTHERS' ? 'is-warning has-text-weight-bold' : ''}"
       on:click={() => activeCategory = 'OTHERS'}
     >
       Others
     </button>
   </div>
 </div>
-
+</div>
+</section>
 
 <div class="columns is-mobile is-multiline" style="max-width:1400px; margin:auto;">
   
