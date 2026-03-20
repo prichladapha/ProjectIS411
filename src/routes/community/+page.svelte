@@ -1,283 +1,146 @@
-
-
 <script>
-  import { onMount } from 'svelte';
+  import { goto } from '$app/navigation';
 
-  let commentText = "";
-  let comments = [];
+  let posts = [
+    {
+      name: "ลีน่าจัง",
+      username: "@kikidoyouloveme",
+      avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQOxqzW9JSe7pOmbjCUXdlPxBzEvkhKBUrI5g&s",
+      content: "เสื้อแบบนี้ใส่กับกระโปรงแบบไหนดีคะ ของแบรนด์ @littlemonday #matching #whitetop",
+      image: "https://i.pinimg.com/1200x/6a/ae/d0/6aaed02da72d5373c07eaf7b69116a8b.jpg",
+      likes: 24, reposts: 5, shares: 2,
+      staticComments: [
+        { name: "พั้นคุง", avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRZi_CHzIU68gmOMxUUtfMQUtDKnC9B_s4mHA&s", text: "ใส่กะกระโปรงสีอ่อนๆมั้ยค้าฟคนสวย", time: "3 hrs" },
+        { name: "น้องผัก", avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTyszNIwM59Yja6anjgdZoSeP6XACdto22acQ&s", text: "กระโปรงสั้นๆก็สวยน้าอ้วน", time: "2 hrs" },
+        { name: "มาดามจือ", avatar: "https://hauterrfly.com/wp-content/uploads/2025/10/aespa-giselle-tattoo-backlash-misogynistic-backlash.jpg", text: "ขอพิกัดได้มั้ยคะ", time: "2 hrs" }
+      ]
+    },
+    {
+      name: "น้องผัก",
+      username: "@veggie_girl",
+      avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTyszNIwM59Yja6anjgdZoSeP6XACdto22acQ&s",
+      content: "เอ้าฟิตวันนี้ค่ะ เสื้อ40 ส่วนกระโปรงยืมแม่ #ootd #vintage",
+      image: "https://i.pinimg.com/736x/33/de/7e/33de7e83f418c4ff2f3f50591748f702.jpg",
+      likes: 10, reposts: 2, shares: 1,
+      staticComments: [
+        { name: "ลีน่าจัง", avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQOxqzW9JSe7pOmbjCUXdlPxBzEvkhKBUrI5g&s", text: "น่ารักมากเลยค่า", time: "1 hr" }
+      ]
+    },
+    {
+      name: "เย้ๆๆๆ",
+      username: "@yippeee",
+      avatar: "https://i.pinimg.com/1200x/bb/10/5a/bb105a7c0fa94cfce7a2ec8fc4dc5d55.jpg",
+      content: "Y2K fit of the day 🤍 #y2k #fashion",
+      image: "https://i.pinimg.com/1200x/4c/d9/79/4cd97954db08a8dc48a9bd6e59e1c378.jpg",
+      likes: 55, reposts: 12, shares: 4,
+      staticComments: [
+        { name: "rosie", avatar: "https://i.pinimg.com/736x/08/01/e2/0801e233c0533e1fbfbab744b9155d57.jpg", text: "cute มากเลยค่า", time: "1 hr" }
+      ]
+    },
+    {
+      name: "rosie",
+      username: "@imnaim_",
+      avatar: "https://i.pinimg.com/736x/08/01/e2/0801e233c0533e1fbfbab744b9155d57.jpg",
+      content: "vintage haul มาค่ะ ได้มาจากตลาดนัด #vintage #thrift",
+      image: "https://i.pinimg.com/1200x/a3/14/b3/a314b3f341ba3d4e8bfee915ad6a9c0f.jpg",
+      likes: 30, reposts: 3, shares: 2,
+      staticComments: [
+        { name: "เย้ๆๆๆ", avatar: "https://i.pinimg.com/1200x/bb/10/5a/bb105a7c0fa94cfce7a2ec8fc4dc5d55.jpg", text: "ได้มาจากที่ไหนคะ", time: "2 hrs" }
+      ]
+    }
 
-  function postComment() {
-    if (commentText.trim() === "") return;
-    comments = [...comments, commentText.trim()];
-    commentText = "";
-  }
+  // รัน id อัตโนมัติ และนับ comments จาก staticComments
+  ].map((post, index) => ({ ...post, id: index + 1, comments: post.staticComments.length }))
 </script>
 
-
 <section class="section pt-3">
+
+  <!-- แถบ TAGS ติดด้านบน -->
   <div class="container">
-     <div class="columns is-vcentered mb-5">
-
-      <!-- Title -->
-      <div class="column is-narrow mt-5">
-        <h1 class="title is-4 mb-0">Community Post</h1>
+    <div class="tag-filter-box">
+      <div class="container" style="max-width:1400px;">
+        <div class="is-flex is-align-items-center is-flex-wrap-wrap">
+          <p class="title is-5 mr-4 mb-2">TAGS</p>
+          <div class="field is-grouped is-grouped-multiline">
+            <div class="control"><span class="tag is-success is-medium">Woman</span></div>
+            <div class="control"><span class="tag is-success is-medium">Men</span></div>
+            <div class="control"><span class="tag is-success is-medium">Vintage</span></div>
+            <div class="control"><span class="tag is-success is-medium">Y2K</span></div>
+            <div class="control"><span class="tag is-success is-medium">Others</span></div>
+          </div>
+        </div>
       </div>
+    </div>
+  </div>
 
-      <!-- Search -->
-      <div class="column mt-5">
-        <div class="field has-addons">
-          
-          <p class="control is-expanded">
-            <input class="input is-rounded" type="text" placeholder="Search...">
-          </p>
+  <!-- loop วนแสดงโพสทุกอัน -->
+  {#each posts as post}
+  <!-- กดการ์ดแล้วไปหน้า postdetail พร้อมส่ง id -->
+  <div class="card mb-4" style="max-width:1400px; margin:auto; cursor:pointer;"
+    on:click={() => goto(`/postdetail?id=${post.id}`)}>
+    <div class="card-content">
 
-          <p class="control">
-            <button class="button is-primary is-rounded">
-              <span class="icon is-small">
-                <i class="fas fa-search"></i>
-              </span>
-            </button>
-          </p>
-
+      <!-- ข้อมูลคนโพส: รูป ชื่อ username -->
+      <div class="media">
+        <div class="media-left">
+          <figure class="image is-48x48">
+            <img class="is-rounded" src={post.avatar}
+              style="object-fit: cover; width:100%; height:100%;">
+          </figure>
+        </div>
+        <div class="media-content">
+          <p class="title is-4">{post.name}</p>
+          <p class="subtitle is-6">{post.username}</p>
         </div>
       </div>
 
-    </div>
+      <!-- เนื้อหาโพส -->
+      <div class="content">{post.content}</div>
 
-  </div>
-      
+      <!-- รูปภาพในโพส -->
+      <div class="card-image">
+        <figure>
+          <img src={post.image} alt="post image"
+            style="width:100%; height:auto; max-height:500px; object-fit:cover; border-radius:8px;" />
+        </figure>
+      </div>
 
-<div class="container">
-  <!-- แท็ก -->
-  <div class="tag-filter-box">
-    <div class="container" style="max-width:1400px;">
-      
-      <div class="is-flex is-align-items-center is-flex-wrap-wrap">
-
-        <p class="title is-5 mr-4 mb-2">TAGS</p>
-
-        <div class="field is-grouped is-grouped-multiline">
-
-          <div class="control">
-            <span class="tag is-success is-medium">Woman</span>
-          </div>
-
-          <div class="control">
-            <span class="tag is-success is-medium">Men</span>
-          </div>
-
-          <div class="control">
-            <span class="tag is-success is-medium">Vintage</span>
-          </div>
-
-          <div class="control">
-            <span class="tag is-success is-medium">Y2K</span>
-          </div>
-
-          <div class="control">
-            <span class="tag is-success is-medium">Others</span>
-          </div>
-
-        </div>
-
+      <!-- ไอคอน reaction -->
+      <div class="is-flex is-align-items-center mt-3" style="gap: 24px;">
+        <span class="icon-text">
+          <span class="icon"><i class="fas fa-heart"></i></span>
+          <span>{post.likes}</span>
+        </span>
+        <span class="icon-text">
+          <span class="icon"><i class="fas fa-comment"></i></span>
+          <span>{post.comments}</span>
+        </span>
+        <span class="icon-text">
+          <span class="icon"><i class="fas fa-retweet"></i></span>
+          <span>{post.reposts}</span>
+        </span>
+        <span class="icon-text">
+          <span class="icon"><i class="fas fa-paper-plane"></i></span>
+          <span>{post.shares}</span>
+        </span>
       </div>
 
     </div>
   </div>
-</div>
-
-<div class="card" style="max-width:1400px; margin:auto;">
-      <!-- คนโพส -->
-      <div class="card-content">
-
-  <div class="media">
-    
-    <div class="media-left">
-      <figure class="image is-48x48">
-        <img class="is-rounded" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQOxqzW9JSe7pOmbjCUXdlPxBzEvkhKBUrI5g&s"
-          style="object-fit: cover; width:100%; height:100%;"
-        >
-      </figure>
-    </div>
-
-    <div class="media-content">
-      <p class="title is-4">ลีน่าจัง</p>
-      <p class="subtitle is-6">@kikidoyouloveme</p>
-    </div>
-
-  </div>
-
-      <div class="content">
-      เสื้อแบบนี้ใส่กับกระโปรงแบบไหนดีคะ ของแบรนด์ <a>@littlemonday</a>. <a href="#">#matching</a>
-      <a href="#">#whitetop</a>
-      <br />
-      <time datetime="2016-1-1">11:09 PM - 1 Jan 2016</time>
-    </div>
-
-  <!-- รูปที่จขโพสลง -->  
-  <div class="card-image">
-    <figure class="image is-4by3">
-      <img
-        src="https://i.pinimg.com/1200x/6a/ae/d0/6aaed02da72d5373c07eaf7b69116a8b.jpg"
-        alt="Placeholder image"
-      />
-    </figure>
-  </div>
- 
-<p class = "has-text-weight-bold mt-3">
-  <span class="icon"><i class="fas fa-comment"></i></span>
-  3 comments
-</p>
-
-<p class="mt-2 mb-2">Recent</p>
-
-<div style="display: flex; flex-direction: column;">
-<!-- พั้นคุง -->
-<article class="media">
-  <figure class="media-left">
-    <p class="image is-48x48">
-      <img class="is-rounded" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRZi_CHzIU68gmOMxUUtfMQUtDKnC9B_s4mHA&s" 
-        style="object-fit: cover; width:100%; height:100%;" />
-    </p>
-  </figure>
-
-
-  <div class="media-content">
-    <div class="content">
-      <p>
-        <strong>พั้นคุง</strong>
-        <br />
-        ใส่กะกระโปรงสีอ่อนๆมั้ยค้าฟคนสวย
-        <br />
-        <small><a>Like</a> · <a>Reply</a> · 3 hrs</small>
-      </p>
-    </div>
-    </div>
-</article>
-
-<article class="media">
-  <figure class="media-left">
-    <p class="image is-48x48">
-      <img class="is-rounded" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTyszNIwM59Yja6anjgdZoSeP6XACdto22acQ&s" 
-        style="object-fit: cover; width:100%; height:100%;" />
-    </p>
-  </figure>
-  <div class="media-content">
-    <div class="content">
-      <p>
-        <strong>น้องผัก</strong>
-          <br />
-          กระโปรงสั้นๆก็สวยน้าอ้วน
-          <br />
-          <small><a>Like</a> · <a>Reply</a> · 2 hrs</small>
-        </p>
-      </div>
-    </div>
-  </article>
-
-  <article class="media">
-      <figure class="media-left">
-        <p class="image is-48x48">
-          <img class="is-rounded" src="https://hauterrfly.com/wp-content/uploads/2025/10/aespa-giselle-tattoo-backlash-misogynistic-backlash.jpg" 
-            style="object-fit: cover; width:100%; height:100%;" />
-        </p>
-      </figure>
-      <div class="media-content">
-        <div class="content">
-          <p>
-            <strong>มาดามจือ</strong>
-            <br />
-            ขอพิกัดได้มั้ยคะ
-            <br />
-            <small><a>Like</a> · <a>Reply</a> · 2 hrs</small>
-          </p>
-        </div>
-      </div>
-    </article>
-
-<!-- แสดง comment ที่เพิ่มเข้ามา -->
-{#each comments as comment}
-  <article class="media">
-
-    <figure class="media-left">
-      <p class="image is-48x48">
-        <img class="is-rounded" 
-          src="https://wimg.mk.co.kr/news/cms/202511/04/news-p.v1.20251104.99da17c02e474bde9d60f44d8240eb8d_P1.jpeg" 
-          style="object-fit: cover; width:100%; height:100%;" />
-      </p>
-    </figure>
-
-    <div class="media-content">
-      <div class="content">
-        <p>
-          <strong>You</strong><br>
-          {comment}
-        </p>
-      </div>
-    </div>
-
-  </article>
-{/each}
-
-<!-- Add comment -->
-<article class="media">
-  <figure class="media-left">
-    <p class="image is-64x64">
-      <img class="is-rounded" src="https://wimg.mk.co.kr/news/cms/202511/04/news-p.v1.20251104.99da17c02e474bde9d60f44d8240eb8d_P1.jpeg" 
-        style="object-fit: cover; width:100%; height:100%;" />
-    </p>
-  </figure>
-  <div class="media-content">
-    <div class="field">
-      <p class="control">
-        <textarea class="textarea" bind:value={commentText} placeholder="Add a comment..."></textarea>
-      </p>
-    </div>
-    <div class="field">
-      <p class="control">
-        <button class="button is-primary is-rounded" on:click={postComment}>
-          Post comment
-        </button>
-      </p>
-    </div>
-  </div>
-</article>
-</div>
+  {/each}
 
 </section>
 
 <style>
-  .tag-filter-box{
-  background: white;
-  border-top: 1px solid #eaeaea;
-  border-bottom: 1px solid #eaeaea;
-  padding: 16px 0;
-
-  position: sticky;
-  top: 0;
-  z-index: 30;
-}
-
-.tag {
-  cursor: pointer;
-}
-
-.tag:hover {
-  opacity: 0.85;
-}
-
-.image-wrapper{
-  position: relative;
-}
-
-.image-overlay{
-  position: absolute;
-  bottom: 10px;
-  left: 12px;
-  right: 12px;
-  color: white;
-  background: rgba(0,0,0,0.35);
-  padding: 8px 10px;
-  border-radius: 8px;
-}
+  .tag-filter-box {
+    background: white;
+    border-top: 1px solid #eaeaea;
+    border-bottom: 1px solid #eaeaea;
+    padding: 16px 0;
+    position: sticky;
+    top: 0;
+    z-index: 30;
+  }
+  .tag { cursor: pointer; }
+  .tag:hover { opacity: 0.85; }
 </style>

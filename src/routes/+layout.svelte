@@ -1,5 +1,6 @@
 <script>
 	import favicon from '$lib/assets/favicon.svg';
+  import { cartStore } from '$lib/cart.svelte.js';
 
 	let { children } = $props();
 </script>
@@ -15,7 +16,7 @@
       <a class="navbar-item" href="/">
       <div style="display:flex; flex-direction:column; align-items:center;">
         <strong class="is-size-4">FIIT</strong>
-        <p class="is-size-7">Your Clothes</p>
+        <p class="is-size-7 has-text-black">Your Clothes</p> 
       </div>
       </a>
 
@@ -38,14 +39,23 @@
           <span class="icon"><i class="fas fa-bell"></i></span>
         </a>
         
-        <a class="navbar-item" href="/cart">
-          <span class="icon"><i class="fas fa-shopping-cart"></i></span>
-          <span class="is-hidden-desktop">Cart</span> 
+        <a class="navbar-item" href="/cart" style="position: relative;">
+          <span class="icon">
+            <i class="fas fa-shopping-cart"></i>
+          </span>
+          
+          {#if cartStore.count > 0}
+            <span class="tag is-danger is-rounded is-small" 
+              style="position: absolute; top: 10px; right: 2px; font-size: 0.65rem; height: 1.5em; min-width: 1.5em; padding: 0.2em; border: 2px solid #00d1b2;">
+              {cartStore.count}
+            </span>
+          {/if}
+          <span class="is-hidden-desktop ml-2">Cart</span> 
         </a>
 
         <div class="navbar-item">
   			<div class="buttons">
-    			<a href="/sign in" class="button is-white is-rounded has-text-weight-bold">
+    			<a href="/signin" class="button is-white is-rounded has-text-weight-bold">
       			Sign In
     			</a>
   			</div>

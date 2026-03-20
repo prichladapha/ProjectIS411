@@ -60,7 +60,7 @@
           </button>
 
           <div class="has-text-centered">
-            <a class="is-size-7 has-text-grey" href="/sign in">
+            <a class="is-size-7 has-text-grey" href="/signin">
               <span class="icon is-small"><i class="fas fa-arrow-left"></i></span>
               Back to Sign In
             </a>

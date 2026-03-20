@@ -27,6 +27,7 @@
       detail: "แนะนำให้ใส่กับสีอ่อนนุ่มนวลคนสวย",
       count: null,
       time: "2 hrs ago",
+      link: "/postdetail?id=1"
     }
   ];
 </script>
@@ -40,27 +41,24 @@
 </div>
 
 {#each notifications as noti}
-<div class="container mt-5">
-  <div class="box mb-3 px-4 py-4 has-background-light">
-    <div class="is-flex is-justify-content-space-between is-align-items-center">
+<div class="container mt-3">
+  <a href={noti.link} style="text-decoration: none; color: inherit;">
+    <div class="box mb-3 px-4 py-4 has-background-light">
+      <div class="is-flex is-justify-content-space-between is-align-items-center">
+        <div class="is-flex-grow-1 mr-4">
+          <p class="mb-1"><strong>{noti.title}</strong></p>
+          <p class="is-size-6 has-text-grey mb-1">{noti.subtitle}</p>
+          <p class="is-size-7 has-text-grey">{noti.time}</p>
+        </div>
 
-      <!-- Content -->
-      <div style="is-flex-grow-1 mr-4">
-        <p class="mb-1">
-          <strong>{noti.title}</strong>
-        </p>
-        <p class="is-size-6 has-text-grey mb-1">{noti.subtitle}</p>
-        <p class="is-size-7 has-text-grey">{noti.time}</p>
-      </div>
-
-      <!-- Badge -->
-      {#if noti.count}
-  <span class="tag is-rounded has-background-primary has-text-white has-text-weight-bold">
+        <!-- Badge -->
+        {#if noti.count}
+    <span class="tag is-rounded has-background-primary has-text-white has-text-weight-bold">
     {noti.count}
-  </span>
-      {/if}
+    </span>
+        {/if}
 
+      </div>
     </div>
-  </div>
-  </div>
+</div>
 {/each}

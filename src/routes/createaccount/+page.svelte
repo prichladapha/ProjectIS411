@@ -1,30 +1,21 @@
 <script>
-  import { goto } from '$app/navigation';
 
-  let email = '';
-  let password = '';
-  let error = '';
+  let name = $state('');
+  let email = $state('');
+  let password = $state('');
+  let confirmPassword = $state('');
+  let error = $state(''); 
 
-  async function handleSignIn() {
-    error = '';
-
-    if (!email || !password) {
-      error = 'Please enter email and password';
-      return;
-    }
-
-    if (email === 'test@gmail.com' && password === '1234') {
-      goto('/profile');
-    } else {
-      error = 'Invalid email or password';
-    }
+  function handleSignUp() {
+    console.log('ปุ่ม Sign Up ถูกกด!');
   }
+  
 </script>
 
 <section class="hero is-primary">
   <div class="hero-body py-3">
     <div class="container has-text-centered">
-      <p class="title is-4 mb-0">Sign In</p>
+      <p class="title is-4 mb-0">Create Account</p>
     </div>
   </div>
 </section>
@@ -34,6 +25,19 @@
     <div class="columns is-centered">
       <div class="column is-4-desktop is-5-tablet">
         <div class="box">
+          
+          <div class="field">
+            <label class="label">Name</label>
+            <div class="control">
+              <input
+                class="input is-primary"
+                type="text"
+                placeholder="Enter your full name"
+                bind:value={name}
+              />
+            </div>
+          </div>
+
           <div class="field">
             <label class="label">Email</label>
             <div class="control">
@@ -52,8 +56,20 @@
               <input
                 class="input is-primary"
                 type="password"
-                placeholder="Enter your password"
+                placeholder="Create a password"
                 bind:value={password}
+              />
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Confirm Password</label>
+            <div class="control">
+              <input
+                class="input is-primary"
+                type="password"
+                placeholder="Confirm your password"
+                bind:value={confirmPassword}
               />
             </div>
           </div>
@@ -62,12 +78,8 @@
             <p class="has-text-danger is-size-7 mb-3">{error}</p>
           {/if}
 
-          <div class="is-flex is-justify-content-flex-end mb-4">
-            <a class="is-size-7 has-text-primary" href="/forget password">Forgot password?</a>
-          </div>
-
-          <button class="button is-primary is-fullwidth mb-4" on:click={handleSignIn}>
-            Sign In
+          <button class="button is-primary is-fullwidth mt-5 mb-4" onclick={handleSignUp}>
+            Sign Up
           </button>
 
           <p class="has-text-centered is-size-7 has-text-grey mb-3">or continue with</p>
@@ -80,10 +92,11 @@
 
           <div class="has-text-centered mt-4">
             <p class="is-size-7">
-              Don’t have an account?
-              <a class="has-text-primary" href="/create account">Create account</a>
+              Already have an account?
+              <a class="has-text-primary" href="/signin">Sign in</a>
             </p>
           </div>
+          
         </div>
       </div>
     </div>
