@@ -1,22 +1,23 @@
 <script>
   let user = {
-    name: 'beuty collab',
-    username: '@beutycollab',
-    bio: 'ขายเสื้อผ้ามือสอง สภาพดี คัดเองทุกตัว ✨',
+    name: 'น้องผัก',
+    username: '@veggie_girl',
+    bio: 'ชอบแต่งตัวแนววินเทจ มือสองน่ารัก ๆ 🌷',
     location: 'Bangkok, Thailand',
-    avatar: '/images/profile.jpg'
+    avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTyszNIwM59Yja6anjgdZoSeP6XACdto22acQ&s'
   };
 
   let stats = {
-    posts: 3,
-    followers: 1280,
-    following: 215
+    posts: 1,
+    followers: 127,
+    following: 87
   };
 
-  let products = [
-    { name: 'pink mini skirt', price: 79, shop: 'beuty collab', detail: 'เอว 24, ยาว 14', img: '/images/skirt.jpg' },
-    { name: 'สายเดี่ยว งาน patch work', price: 58, shop: 'beuty collab', detail: 'อก 32, ยาว 22', img: '/images/tanktop.jpg' },
-    { name: 'เสื้อครอปริ้วเทา', price: 79, shop: 'beuty collab', detail: 'อก 32, ยาว 22', img: '/images/crop.jpg' }
+  let posts = [
+    {
+      content: 'เอ้าฟิตวันนี้ค่ะ เสื้อ40 ส่วนกระโปรงยืมแม่ #ootd #vintage',
+      image: 'https://i.pinimg.com/736x/33/de/7e/33de7e83f418c4ff2f3f50591748f702.jpg'
+    }
   ];
 </script>
 
@@ -24,8 +25,15 @@
   <div class="container">
     <div class="columns is-vcentered">
       <div class="column is-4 has-text-centered">
-        <figure class="image is-128x128 is-inline-block">
-          <img class="is-rounded" src={user.avatar} alt={user.name} />
+        <figure
+          class="image is-128x128 is-inline-block"
+          style="overflow: hidden; border-radius: 50%;"
+        >
+          <img
+            src={user.avatar}
+            alt={user.name}
+            style="width: 100%; height: 100%; object-fit: cover;"
+          />
         </figure>
       </div>
 
@@ -69,20 +77,22 @@
     </div>
 
     <div class="columns is-multiline is-mobile">
-      {#each products as item}
+      {#each posts as post}
         <div class="column is-12-mobile is-6-tablet is-4-desktop">
           <div class="card">
             <div class="card-image">
-              <figure class="image is-square">
-                <img src={item.img} alt={item.name} />
+              <figure class="image is-square" style="overflow: hidden;">
+                <img
+                  src={post.image}
+                  alt="post"
+                  style="width: 100%; height: 100%; object-fit: cover;"
+                />
               </figure>
             </div>
 
             <div class="card-content">
-              <p class="has-text-weight-bold">{item.name}</p>
-              <p class="is-size-7 has-text-grey">{item.detail}</p>
-              <p class="has-text-primary has-text-weight-bold mt-2">฿ {item.price}</p>
-              <p class="is-size-7">{item.shop}</p>
+              <p class="has-text-weight-semibold">{user.username}</p>
+              <p class="mt-2">{post.content}</p>
             </div>
           </div>
         </div>

@@ -4,16 +4,22 @@
   import ProductCard from '$lib/component/ProductCard.svelte';
   
   let activeCategory = $state(null);
+  let searchQuery = $state("");
 
    function toggleCategory(cat) {
     activeCategory = activeCategory === cat ? null : cat;
   }
 
   let filteredProducts = $derived(
-    activeCategory === null 
-    ? products 
-    : products.filter(p => p.category === activeCategory));
-
+    products.filter(p => {
+    // เช็คว่าชื่อสินค้ามีคำที่ค้นหาไหม (แปลงเป็นตัวพิมพ์เล็กทั้งคู่เพื่อให้หาง่าย)
+      const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
+      // เช็คว่าตรงกับหมวดหมู่ที่เลือกไหม (ถ้าไม่ได้เลือก ให้ผ่านหมด)
+      const matchesCategory = activeCategory === null || p.category === activeCategory;
+      
+      return matchesSearch && matchesCategory;
+    })
+  );
   function isInCart(item) {
     return cartStore.items.some(c => c.name === item.name);
   }
@@ -24,7 +30,11 @@
   <div class="level-item mt-3" style="width:100%;">
         <div class="field has-addons" style="width:100%;">
           <p class="control is-expanded">
-            <input class="input is-rounded " type="text" placeholder="Search...">
+            <input 
+            class="input is-rounded " 
+            type="text" 
+            placeholder="Search..."
+            bind:value={searchQuery}>
           </p>
           <p class="control">
             <button class="button is-primary is-rounded ">

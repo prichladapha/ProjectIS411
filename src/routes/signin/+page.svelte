@@ -16,7 +16,7 @@
 
 
     if (email === 'test@gmail.com' && password === '1234') {
-      currentUser.set({ name: 'notyourkiko', avatar: 'https://i.pinimg.com/1200x/d0/a8/24/d0a824014719918bc812e52c29f6c7a6.jpg' }); // 
+      currentUser.set({ name: 'น้องผัก', avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTyszNIwM59Yja6anjgdZoSeP6XACdto22acQ&s' }); // 
       goto('/profile');
     } else {
       error = 'Invalid email or password';

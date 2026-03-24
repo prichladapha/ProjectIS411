@@ -4,10 +4,29 @@
   let email = $state('');
   let password = $state('');
   let confirmPassword = $state('');
-  let error = $state(''); 
+  let error = $state('');
+  let successMessage = $state('');
 
   function handleSignUp() {
-    console.log('ปุ่ม Sign Up ถูกกด!');
+    if (!name || !email || !password || !confirmPassword) {
+      error = 'กรุณากรอกข้อมูลให้ครบทุกช่อง' ;
+      successMessage= '' ;
+      return ;
+    }
+
+    if (password !== confirmPassword) {
+      error = 'รหัสผ่านและยืนยันรหัสผ่านไม่ตรงกัน';
+      successMessage= '' ;
+      return ;
+    }
+
+    error ='';
+    successMessage ='สมัครสมาชิกสำเร็จ กำลังพากลับไปหน้าเข้าสู่ระบบ...';
+
+    name ='';
+    email='';
+    password='';
+    confirmPassword='';
   }
   
 </script>
@@ -74,11 +93,27 @@
             </div>
           </div>
 
-          {#if error}
-            <p class="has-text-danger is-size-7 mb-3">{error}</p>
+          {#if password !== '' && confirmPassword !== ''}
+            {#if password === confirmPassword}
+              <p class="help is-success mb-3">✓ รหัสผ่านตรงกัน</p>
+            {:else}
+              <p class="help is-danger mb-3">✗ รหัสผ่านยังไม่ตรงกัน</p>
+            {/if}
           {/if}
 
-          <button class="button is-primary is-fullwidth mt-5 mb-4" onclick={handleSignUp}>
+          {#if error}
+            <div class="notification is-danger is-light is-size-7 py-2 mb-3">
+              {error}
+            </div>
+          {/if}
+
+          {#if successMessage}
+            <div class="notification is-success is-light is-size-7 py-2 mb-3">
+              {successMessage}
+            </div>
+          {/if}
+
+          <button class="button is-primary is-fullwidth mt-3 mb-4" onclick={handleSignUp}>
             Sign Up
           </button>
 

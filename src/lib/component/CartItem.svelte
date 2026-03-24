@@ -1,6 +1,6 @@
 <script>
   // รับ item (สินค้า), index (ตำแหน่ง), และฟังก์ชัน onRemove ผ่าน props
-  let { item, index, onRemove } = $props();
+  let { item =$bindable(), index, onRemove } = $props();
 </script>
 
 <div class="columns is-mobile is-vcentered mb-3" style="position: relative;">
@@ -11,7 +11,9 @@
     ></button>
 
     <div class="column is-narrow">
-      <input type="checkbox" bind:checked={item.selected} class="checkbox">
+      <input type="checkbox" 
+      bind:checked={item.selected} 
+      class="checkbox">
     </div>
 
     <div class="column is-narrow">

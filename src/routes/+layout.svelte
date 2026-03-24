@@ -3,6 +3,7 @@
   import { cartStore } from '$lib/cart.svelte.js';
 
 	let { children } = $props();
+  let menuOpen = $state(false)
 </script>
 
 <svelte:head>
@@ -20,23 +21,26 @@
       </div>
       </a>
 
-      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarMenu">
+      <a role="button" class="navbar-burger" class:is-active={menuOpen} aria-label="menu" aria-expanded={menuOpen} onclick={() => menuOpen = !menuOpen}>
         <span aria-hidden="true"></span>
         <span aria-hidden="true"></span>
         <span aria-hidden="true"></span>
       </a>
     </div>
 
-    <div id="navbarMenu" class="navbar-menu">
+    <div id="navbarMenu" class="navbar-menu" class:is-active={menuOpen} style="text-align: center;">
       
       <div class="navbar-start" style="flex-grow: 1">
         <a class="navbar-item" href="/">Home</a>
-        <a class="navbar-item" href="/community">Commu</a>
+        <a class="navbar-item" href="/community">
+          Commu<span class="is-hidden-desktop">nity</span>
+        </a>
       </div>
 	
       <div class="navbar-end">
         <a class="navbar-item" href="/notify">
           <span class="icon"><i class="fas fa-bell"></i></span>
+          <span class="is-hidden-desktop ml-1">Notification</span>
         </a>
         
         <a class="navbar-item" href="/cart" style="position: relative;">
@@ -65,3 +69,51 @@
 </div> </nav>
 
 {@render children()}
+
+<style>
+  @media (max-width: 1023px) {
+    :global(.navbar-menu.is-active .navbar-item) {
+      justify-content: center;
+    }
+    :global(.navbar-menu.is-active .navbar-start),
+    :global(.navbar-menu.is-active .navbar-end) {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    :global(.navbar-item .button.is-white) {
+      background-color: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+  
+   :global(.navbar-item) {
+    display: flex;
+    justify-content: center;
+  }
+  }
+
+  @media (min-width: 1024px) {
+    :global(.navbar-item:hover) {
+      background-color: transparent !important;
+    }
+
+  }
+
+.icon-wrapper {
+  position: relative; /* สำคัญมาก */
+  display: inline-block;
+}
+
+.badge {
+  position: absolute;
+  top: -5px;
+  right: -8px;
+  background: red;
+  color: white;
+  font-size: 12px;
+  border-radius: 50%;
+  padding: 2px 6px;
+}
+</style>

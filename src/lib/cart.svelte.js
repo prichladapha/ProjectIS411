@@ -14,7 +14,7 @@ export const cartStore = $state({
     },  
 
     get selectedCount() {
-        return this.items.filter(item => item.selected).length;
+        return this.items.filter(item => item.selected).length; 
     }
 });
 
@@ -25,9 +25,7 @@ export function addToCart(product) {
 }
 
 export function removeFromCart(index) {
-    // ใช้ .splice เพื่อลบออก 1 ตำแหน่งตาม index ที่ส่งมา
     cartStore.items.splice(index, 1);
-    console.log("ลบสินค้าตำแหน่งที่:", index);
 }
 
 export function isInCart(product) {
