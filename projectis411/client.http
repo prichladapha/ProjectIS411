@@ -1,15 +1,15 @@
 ### post Product
 POST http://127.0.0.1:8000/products/
 
-{
-  "pname": "กระเป๋า Coach หนังแท้ สีดำ",
-  "price": 3500,
-  "brand": "Coach",
-  "description": "กระเป๋าหนังแท้ สภาพ 90% มีรอยเล็กน้อยที่มุม",
-  "categoryID": 5,
+{"pname": "เดรส Zara สีแดง",
+  "price": 790,
+  "brand": "Zara",
+  "description": "ใส่ครั้งเดียว สภาพใหม่มาก",
+  "categoryID": 4,
   "seller_id": 2,
-  "tags": "กระเป๋า, coach, หนังแท้",
-  "product_status": "available"
+  "tags": "เดรส, zara, เสื้อผ้า",
+  "product_status": "available",
+  "image_url": "https://example.com/images/coach-black-bag.jpg"
 }
 
 ###get product by id

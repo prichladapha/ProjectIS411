@@ -1,8 +1,8 @@
 from datetime import datetime
 from fastapi import FastAPI, HTTPException
-from sqlmodel import Session, select, or_, func
+from sqlmodel import SQLModel, Session, select, or_, func
 from database import engine, init_db
-from models import (ProductDB, Product, ProductOut, ProductSearchRequest, SortBy,  OrderDB, OrderOut, OrderCreate, OrderStatus, OrderItemDB, PaymentDB, Payment, PaymentOut, CustomerDB, Customer, CustomerOut, SellerDB, Seller, SellerOut, CategoryDB, CartItemDB, CartItemCreate)
+from models import (ProductDB, Product, ProductOut, ProductSearchRequest, SortBy,  OrderDB, OrderOut, OrderCreate, OrderStatus, OrderItemDB, PaymentDB, Payment, PaymentOut, CustomerDB, Customer, CustomerOut, SellerDB, Seller, SellerOut, CategoryDB, CartItemDB, CartItemCreate, PostDB, Post, PostOut, Comment, CommentOut, CommentDB,PostSearchRequest)
 from fastapi.middleware.cors import CORSMiddleware
 
 init_db()
@@ -17,7 +17,7 @@ app.add_middleware(
 )
 
 #Product
-RUN_SEED_DATA = False #ตอนจะinsertค่อยเปลี่ยนเป็นTrue #เป็น flag variable
+RUN_SEED_DATA = True #ตอนจะinsertค่อยเปลี่ยนเป็นTrue #เป็น flag variable
 #เพิ่มสินค้าใหม่
 def insert_product():
     product_1 = ProductDB(
@@ -82,6 +82,8 @@ if __name__ == "__main__":
         insert_categories()
     else:
         print("ℹ️ Seed data disabled (RUN_SEED_DATA = False)")
+
+
 
 @app.get("/categories/")
 async def get_all_categories():
@@ -670,7 +672,8 @@ async def search_products(search: ProductSearchRequest):
                     "categoryID": p.categoryID,
                     "seller_id": p.seller_id,
                     "tags": p.tags,
-                    "product_status": p.product_status
+                    "product_status": p.product_status,
+                    "image_url": p.image_url or "https://placehold.co/400x400"
                 }
                 for p in products
             ]
@@ -733,3 +736,123 @@ async def remove_from_cart(cartitem_id: int):
             return {"message": "ลบสำเร็จ"}
         return {"message": "ไม่พบข้อมูล"}
 
+
+###Community
+###Community
+
+# สร้างโพสใหม่
+@app.post("/posts/")
+async def create_post(post: Post) -> PostOut:
+    with Session(engine) as session:
+        db_post = PostDB(
+            customer_id=post.customer_id,
+            content=post.content,
+            image_url=post.image_url,
+            tags=post.tags
+        )
+        session.add(db_post)
+        session.commit()
+        session.refresh(db_post)
+
+        # ดึงข้อมูล customer มาประกอบ
+        customer = session.get(CustomerDB, db_post.customer_id)
+
+        return PostOut(
+            post_id=db_post.post_id,
+            customer_id=db_post.customer_id,
+            content=db_post.content,
+            image_url=db_post.image_url,
+            tags=db_post.tags,
+            created_at=db_post.created_at,
+            customer_name=customer.display_name or customer.username if customer else None,
+            customer_username=f"@{customer.username}" if customer else None,
+            customer_avatar=customer.avatar if customer else None
+        )
+
+# ดึงโพสทั้งหมด (ใช้ใน community feed)
+@app.get("/posts/")
+async def get_all_posts() -> list[PostOut]:
+    with Session(engine) as session:
+        posts = session.exec(select(PostDB).order_by(PostDB.created_at.desc())).all()
+
+        result = []
+        for post in posts:
+            customer = session.get(CustomerDB, post.customer_id)
+            result.append(PostOut(
+                post_id=post.post_id,
+                customer_id=post.customer_id,
+                content=post.content,
+                image_url=post.image_url,
+                tags=post.tags,
+                created_at=post.created_at,
+                customer_name=customer.display_name or customer.username if customer else None,
+                customer_username=f"@{customer.username}" if customer else None,
+                customer_avatar=customer.avatar if customer else None
+            ))
+        return result
+
+# ดึงโพสตาม id (ใช้ใน post detail)
+@app.get("/posts/{post_id}")
+async def get_post_by_id(post_id: int):
+    with Session(engine) as session:
+        post = session.get(PostDB, post_id)
+
+        if not post:
+            raise HTTPException(status_code=404, detail="Post not found")
+
+        customer = session.get(CustomerDB, post.customer_id)
+
+        # ดึง comments ของโพสนี้
+        comments_raw = session.exec(
+            select(CommentDB).where(CommentDB.post_id == post_id)
+            .order_by(CommentDB.created_at.asc())
+        ).all()
+
+        static_comments = []
+        for c in comments_raw:
+            commenter = session.get(CustomerDB, c.customer_id)
+            static_comments.append({
+                "name": commenter.display_name or commenter.username if commenter else "Unknown",
+                "avatar": commenter.avatar or "",
+                "text": c.text,
+                "time": c.created_at.strftime("%H:%M")
+            })
+
+        return {
+            "id": post.post_id,
+            "name": customer.display_name or customer.username if customer else "Unknown",
+            "username": f"@{customer.username}" if customer else "@unknown",
+            "avatar": customer.avatar or "",
+            "content": post.content,
+            "image": post.image_url or "",
+            "likes": 0,
+            "reposts": 0,
+            "shares": 0,
+            "staticComments": static_comments
+        }
+
+# โพสคอมเมนต์ใหม่
+@app.post("/posts/{post_id}/comments")
+async def add_comment(post_id: int, comment: Comment):
+    with Session(engine) as session:
+        post = session.get(PostDB, post_id)
+        if not post:
+            raise HTTPException(status_code=404, detail="Post not found")
+
+        db_comment = CommentDB(
+            post_id=post_id,
+            customer_id=comment.customer_id,
+            text=comment.text
+        )
+        session.add(db_comment)
+        session.commit()
+        session.refresh(db_comment)
+
+        customer = session.get(CustomerDB, comment.customer_id)
+        return {
+            "comment_id": db_comment.comment_id,
+            "name": customer.display_name or customer.username if customer else "Unknown",
+            "avatar": customer.avatar or "",
+            "text": db_comment.text,
+            "time": db_comment.created_at.strftime("%H:%M")
+        }

@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlmodel import Field, SQLModel
 from typing import List, Optional
 from datetime import datetime
@@ -235,3 +235,48 @@ class CartItemCreate(SQLModel):
     cus_id: int
     product_id: int
     qty: int = 1   
+
+
+# community
+class Post(BaseModel):
+    customer_id: int
+    content: str
+    image_url: str | None = None
+    tags: str | None = None  # เก็บเป็น string เช่น "vintage,streetwear"
+
+class PostOut(Post):
+    post_id: int
+    created_at: datetime
+    # เพิ่มฟิลด์สำหรับแสดงผลข้อมูลลูกค้า (เหมือนที่คุณทำใน main.py)
+    customer_name: str | None = None
+    customer_username: str | None = None
+    customer_avatar: str | None = None
+
+class PostDB(SQLModel, table=True):
+    post_id: int | None = Field(default=None, primary_key=True)
+    customer_id: int
+    content: str
+    image_url: str | None = None
+    tags: str | None = None
+    created_at: datetime = Field(default_factory=datetime.now)
+
+class Comment(BaseModel):
+    post_id: int
+    customer_id: int
+    text: str
+
+class CommentOut(Comment):
+    comment_id: int
+    created_at: datetime
+    customer_name: str | None = None
+    customer_avatar: str | None = None
+
+class CommentDB(SQLModel, table=True):
+    comment_id: int | None = Field(default=None, primary_key=True)
+    post_id: int
+    customer_id: int
+    text: str
+    created_at: datetime = Field(default_factory=datetime.now)
+
+class PostSearchRequest(BaseModel):
+    tags: str | None = None  # กรองด้วย tag เช่น "vintage"
