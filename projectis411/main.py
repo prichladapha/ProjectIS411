@@ -179,132 +179,55 @@ def validate_product_for_order(product: ProductDB, item_qty: int):
         raise HTTPException(status_code=400, detail="Invalid product price")
 
     return True
-    
+
+def process_order_logic(session, cus_id, items_to_process, shipping_cost):
+    for item in items_to_process:
+        product = session.get(ProductDB, item.product_id)
+        
+        #ตรวจสอบสินค้าก่อนทำขั้นตอนต่อไป
+        validate_product_for_order(product, item.qty)
+        
+        # ถ้าผ่านด่านข้างบนมาได้ ถึงจะเริ่มคำนวณเงิน...
+        total_price += product.price * item.qty
+
+#ซื้อเลย (Buy Now)
 @app.post("/create-order/")
-async def create_order(order: OrderCreate) -> dict:
-    """
-    สร้าง Order พร้อม Order Items
-    - ดึง price จาก Product table
-    - Validate product status และ price
-    - Calculate total
-    - เปลี่ยน Product Status เป็น sold
-    """
-    # Validate
-    if not order.items or len(order.items) == 0:
-        raise HTTPException(status_code=400, detail="Order must have at least one item")
-    
+async def create_order(order: OrderCreate):
     with Session(engine) as session:
         try:
-            # 1. Validate products และดึงราคา
-            validated_items = []
-            products_to_update = []  # เพิ่ม: เก็บ products ที่จะอัพเดท
-            total_price = 0
-            
-            for item in order.items:
-                # ดึง product จาก database
-                product = session.get(ProductDB, item.product_id)
-                
-                # ตรวจสอบว่า product มีอยู่
-                if not product:
-                    raise HTTPException(
-                        status_code=404, 
-                        detail=f"Product ID {item.product_id} not found"
-                    )
-                
-                # Validate product (status, price)
-                validate_product_for_order(product, item.qty)
-                
-                # คำนวณราคา
-                item_price = product.price  # รับประกันว่าไม่ใช่ None แล้ว
-                item_total = item_price * item.qty
-                total_price += item_total
-                
-                validated_items.append({
-                    'product_id': item.product_id,
-                    'product_name': product.pname,
-                    'brand': product.brand,
-                    'qty': item.qty,
-                    'price': item_price,
-                    'subtotal': item_total
-                })
-
-                products_to_update.append(product)  # เพิ่ม: เก็บ product object
-
-            
-            # 2. คำนวณยอดรวม
-            grand_total = total_price + order.shipping_cost
-            
-            # 3. สร้าง Order
-            db_order = OrderDB(
-                cus_id=order.cus_id,
-                total_price=total_price,
-                shipping_cost=order.shipping_cost,
-                grand_total=grand_total,
-                order_status=OrderStatus.pending,
-                created_at=datetime.now()
-            )
-            session.add(db_order)
-            session.flush()  # ได้ order_id
-            
-            # 4. สร้าง Order Items (เก็บ DB objects แยกต่างหาก)
-            db_order_items = []  #  เก็บ DB objects
-            for item_data in validated_items:
-                db_item = OrderItemDB(
-                    order_id=db_order.order_id,
-                    product_id=item_data['product_id'],
-                    qty=item_data['qty'],
-                    price=item_data['price']
-                )
-                session.add(db_item)
-                db_order_items.append(db_item)  # เก็บ DB object
-            
-            # 4.5 เปลี่ยน Product Status เป็น sold
-            for product in products_to_update:
-                product.product_status = "sold"
-                print(f"✅ Changed {product.pname} status to sold")  # Debug
-            
-            # 5. Commit
+            # เรียกใช้ "กุ๊ก" (Helper Function) ตรงนี้ครับ!
+            new_order = process_order_logic(session, order.cus_id, order.items, order.shipping_cost)
             session.commit()
-            
-            # 6. Refresh
-            session.refresh(db_order)
-            for db_item in db_order_items:  #refresh DB objects
-                session.refresh(db_item)
-            
-            # 7. Return response
-            return {
-                "message": "Order created successfully",
-                "order_id": db_order.order_id,
-                "cus_id": db_order.cus_id,
-                "total_price": float(db_order.total_price),
-                "shipping_cost": float(db_order.shipping_cost),
-                "grand_total": float(db_order.grand_total),
-                "order_status": db_order.order_status,
-                "created_at": db_order.created_at.isoformat(),
-                "items": [
-                    {
-                        "orderitem_id": db_item.orderitem_id,
-                        "order_id": db_item.order_id,
-                        "product_id": db_item.product_id,
-                        "product_name": validated_items[i]['product_name'],
-                        "brand": validated_items[i]['brand'],
-                        "qty": db_item.qty,
-                        "price": float(db_item.price),
-                        "subtotal": float(db_item.price * db_item.qty)
-                    } for i, db_item in enumerate(db_order_items)
-                ]
-            }
-            
-        except HTTPException:
-            session.rollback()
-            raise
+            session.refresh(new_order)
+            return {"message": "Order created via Buy Now", "order_id": new_order.order_id}
         except Exception as e:
             session.rollback()
-            raise HTTPException(
-                status_code=500, 
-                detail=f"Failed to create order: {str(e)}"
-            )
+            raise e
 
+#หน้าตะกร้า (Checkout)
+@app.post("/orders/checkout/{cus_id}")
+async def checkout(cus_id: int):
+    with Session(engine) as session:
+        # ดึงของจากตะกร้าใน DB มาก่อน
+        cart_items = session.exec(select(CartItemDB).where(CartItemDB.cus_id == cus_id)).all()
+        if not cart_items:
+            raise HTTPException(status_code=400, detail="Cart is empty")
+
+        try:
+            #ส่งของจากตะกร้าไปให้
+            new_order = process_order_logic(session, cus_id, cart_items, 50.0)
+            
+            # พอทำเสร็จต้อง "ล้างตะกร้า"
+            for item in cart_items:
+                session.delete(item)
+                
+            session.commit()
+            session.refresh(new_order)
+            return {"message": "Order created from Cart", "order_id": new_order.order_id}
+        except Exception as e:
+            session.rollback()
+            raise e
+        
 #get all order
 @app.get("/orders/")
 async def get_all_orders() -> list[OrderOut]:

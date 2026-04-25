@@ -161,7 +161,7 @@
           e.preventDefault();
           e.stopPropagation();
           if (!data.user) {
-              alert("กรุณาเข้าสู่ระบบก่อนหยิบของใส่ตะกร้าค่ะ!");
+              alert("Please sign in to add items to your cart!");
               return;
             }
           addToCart(item);
