@@ -238,45 +238,43 @@ class CartItemCreate(SQLModel):
 
 
 # community
-class Post(BaseModel):
-    customer_id: int
+# --- Post Model ---
+class Post(SQLModel):
     content: str
-    image_url: str | None = None
-    tags: str | None = None  # เก็บเป็น string เช่น "vintage,streetwear"
+    image_url: Optional[str] = None
+    likes: int = 0
+    reposts: int = 0
+    shares: int = 0
+    customer_id: int  # อ้างอิง id ของคนโพสต์ตรงๆ
 
 class PostOut(Post):
     post_id: int
-    created_at: datetime
-    # เพิ่มฟิลด์สำหรับแสดงผลข้อมูลลูกค้า (เหมือนที่คุณทำใน main.py)
-    customer_name: str | None = None
-    customer_username: str | None = None
-    customer_avatar: str | None = None
-
-class PostDB(SQLModel, table=True):
-    post_id: int | None = Field(default=None, primary_key=True)
-    customer_id: int
-    content: str
-    image_url: str | None = None
-    tags: str | None = None
+    customer_name: Optional[str] = None
+    customer_username: Optional[str] = None
+    customer_avatar: Optional[str] = None
+    comments_count: int = 0
     created_at: datetime = Field(default_factory=datetime.now)
 
-class Comment(BaseModel):
-    post_id: int
-    customer_id: int
+
+class PostDB(Post, table=True):
+    post_id: Optional[int] = Field(default=None, primary_key=True)
+
+# --- Comment Model ---
+class Comment(SQLModel):
     text: str
+    post_id: int      # อ้างอิง id ของโพสต์
+    customer_id: int  # อ้างอิง id ของคนคอมเมนต์
+    time_str: str = "Just now"
 
 class CommentOut(Comment):
     comment_id: int
-    created_at: datetime
-    customer_name: str | None = None
-    customer_avatar: str | None = None
+    name: str
+    avatar: str
+    time: str # ส่งเป็น string ที่ format แล้ว เช่น "10:30"
 
-class CommentDB(SQLModel, table=True):
-    comment_id: int | None = Field(default=None, primary_key=True)
-    post_id: int
-    customer_id: int
-    text: str
-    created_at: datetime = Field(default_factory=datetime.now)
+class CommentDB(Comment, table=True):
+    comment_id: Optional[int] = Field(default=None, primary_key=True)
 
-class PostSearchRequest(BaseModel):
-    tags: str | None = None  # กรองด้วย tag เช่น "vintage"
+class SigninRequest(BaseModel):
+    email: str
+    password: str

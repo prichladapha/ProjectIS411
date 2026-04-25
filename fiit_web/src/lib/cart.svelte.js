@@ -1,4 +1,4 @@
-// กำหนด URL ตรงนี้ที่เดียว เปลี่ยนง่ายครับขิม
+// กำหนด URL ตรงนี้ที่เดียว 
 const API_BASE_URL = "http://127.0.0.1:8000";
 
 export const cartStore = $state({

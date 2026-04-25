@@ -7,32 +7,24 @@ export const actions = {
         const password = data.get('password');
 
         if (email === 'test@gmail.com' && password === '1234') {
-            console.log("Mock Login Success!");
-            
             const mockUser = {
+                customer_id: 999, 
                 username: "testuser",
-                email: "test@gmail.com",
-                display_name: "น้องเทส สายวินเทจ",
-                customer_phone: "0812345678",
-                avatar: "https://i.pinimg.com/736x/21/20/b0/2120b058cb9946e36306778243eadae5.jpg"
+                email: "test@gmail.com"
             };
 
-            cookies.set('session_token', 'mock-token-12345', {
-                path: '/',
-                httpOnly: true,
-                maxAge: 60 * 60 * 24
-            });
-            
             cookies.set('user_data', JSON.stringify(mockUser), {
                 path: '/',
-                maxAge: 60 * 60 * 24
+                maxAge: 60 * 60 * 24,
+                httpOnly: false 
             });
 
             throw redirect(303, '/profile');
         }
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/login/', {
+        
+            const response = await fetch('http://127.0.0.1:8000/Signin', { 
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })
@@ -44,20 +36,28 @@ export const actions = {
 
             const result = await response.json();
 
-            cookies.set('session_token', result.access_token || 'real-token', {
+            cookies.set('user_data', JSON.stringify({
+                customer_id: result.customer_id,
+                username: result.username
+            }), {
+                path: '/',
+                maxAge: 60 * 60 * 24,
+                httpOnly: false 
+            });
+
+            
+            cookies.set('session_token', 'real-token-active', {
                 path: '/',
                 httpOnly: true,
                 maxAge: 60 * 60 * 24
             });
 
-            cookies.set('user_data', JSON.stringify(result.user || { email, username: email.split('@')[0] }), {
-                path: '/',
-                maxAge: 60 * 60 * 24
-            });
-
         } catch (err) {
-            if (err.status === 303) throw err; 
-            return fail(500, { error: 'ติดต่อเซิร์ฟเวอร์ไม่ได้', email });
+            
+            if (err.status === 303 || err.status === 302) throw err; 
+            
+            console.error("Signin Error:", err);
+            return fail(500, { error: 'เซิร์ฟเวอร์หลังบ้านมีปัญหา (เช็ค FastAPI)', email });
         }
 
         throw redirect(303, '/profile');

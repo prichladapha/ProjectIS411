@@ -45,6 +45,7 @@
           <div class="buttons mb-2">
             <button class="button is-primary is-light">Edit profile</button>
             <button class="button is-light">Share profile</button>
+            <a href="/addproduct"><button class="button is-light">Add Product</button></a>
             
             <form action="?/logout" method="POST" use:enhance class="ml-2">
               <button class="button is-danger is-outlined" type="submit">

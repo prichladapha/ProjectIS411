@@ -6,24 +6,6 @@
 
 <section class="section pt-3">
 
-  <!-- แถบ TAGS ติดด้านบน -->
-  <div class="container">
-    <div class="tag-filter-box">
-      <div class="container" style="max-width:1400px;">
-        <div class="is-flex is-align-items-center is-flex-wrap-wrap">
-          <p class="title is-5 mr-4 mb-2">TAGS</p>
-          <div class="field is-grouped is-grouped-multiline">
-            <div class="control"><span class="tag is-success is-medium">Woman</span></div>
-            <div class="control"><span class="tag is-success is-medium">Men</span></div>
-            <div class="control"><span class="tag is-success is-medium">Vintage</span></div>
-            <div class="control"><span class="tag is-success is-medium">Y2K</span></div>
-            <div class="control"><span class="tag is-success is-medium">Others</span></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- loop วนแสดงโพสทุกอัน -->
 <div class="mt-4">
   {#each posts as post (post.id)}

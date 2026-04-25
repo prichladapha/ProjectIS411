@@ -9,7 +9,7 @@ POST http://127.0.0.1:8000/products/
   "seller_id": 2,
   "tags": "เดรส, zara, เสื้อผ้า",
   "product_status": "available",
-  "image_url": "https://example.com/images/coach-black-bag.jpg"
+  "image_url": "https://th.bing.com/th/id/OIP.nBtQXbc56tKup3D1zq4GcgHaHa?o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3"
 }
 
 ###get product by id
@@ -98,6 +98,52 @@ POST http://127.0.0.1:8000/customers/
   "customer_phone": "0878888888"
 }
 
+###Customer เพิ่มเติม
+POST http://127.0.0.1:8000/customers/
+
+[
+  {
+    "username": "madam_jue",
+    "email": "jue@gmail.com",
+    "customer_phone": "0912345678",
+    "password": "password123",
+    "display_name": "มาดามจือ",
+    "avatar": "https://hauterrfly.com/wp-content/uploads/2025/10/aespa-giselle-tattoo-backlash-misogynistic-backlash.jpg"
+  },
+  {
+    "username": "kikidoyouloveme",
+    "email": "leena@gmail.com",
+    "customer_phone": "0987654321",
+    "password": "password123",
+    "display_name": "ลีน่าจัง",
+    "avatar": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQOxqzW9JSe7pOmbjCUXdlPxBzEvkhKBUrI5g&s"
+  },
+  {
+    "username": "veggie_girl",
+    "email": "veggie@gmail.com",
+    "customer_phone": "0922222222",
+    "password": "password123",
+    "display_name": "น้องผัก",
+    "avatar": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTyszNIwM59Yja6anjgdZoSeP6XACdto22acQ&s"
+  },
+  {
+    "username": "yippeee",
+    "email": "yippee@gmail.com",
+    "customer_phone": "0933333333",
+    "password": "password123",
+    "display_name": "เย้ๆๆๆ",
+    "avatar": "https://i.pinimg.com/1200x/bb/10/5a/bb105a7c0fa94cfce7a2ec8fc4dc5d55.jpg"
+  },
+  {
+    "username": "imnaim_",
+    "email": "rosie@gmail.com",
+    "customer_phone": "0944444444",
+    "password": "password123",
+    "display_name": "rosie",
+    "avatar": "https://i.pinimg.com/736x/08/01/e2/0801e233c0533e1fbfbab744b9155d57.jpg"
+  }
+]
+
 ###Get all customers
 GET http://127.0.0.1:8000/customers/
 
@@ -153,7 +199,7 @@ POST http://127.0.0.1:8000/products/search
 POST http://127.0.0.1:8000/products/search
 
 {
-  "tags": ["vintage", "หมวก"],
+  "tags": ["หมวก"],
   "sort_by": "newest",
   "page": 1
 }
