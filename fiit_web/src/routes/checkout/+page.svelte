@@ -11,8 +11,7 @@
                 <div class="box">
                     <h2 class="subtitle is-5">📦 Order Details</h2>
                     <hr>
-                    <table class="table is-fullwidth">
-                        <thead>
+                    <table class="table is-fullwidth is-striped"> <thead>
                             <tr>
                                 <th>Product</th>
                                 <th class="has-text-centered">Qty</th>
@@ -22,12 +21,26 @@
                         <tbody>
                             {#each cartStore.items as item}
                                 <tr>
-                                    <td>
-                                        <strong>{item.name}</strong><br>
-                                        <span class="is-size-7 has-text-grey">{item.shop}</span>
-                                    </td>
-                                    <td class="has-text-centered">{item.qty || 1}</td>
-                                    <td class="has-text-right">{item.price.toLocaleString()} ฿</td>
+                                    <td class="is-vcentered">
+    <div class="media is-vcentered">
+        <div class="media-left">
+            <figure class="image is-4by3" style="width: 80px;"> 
+                <img 
+                    src={item.img || 'https://placehold.co/400x300?text=No+Image'} 
+                    alt={item.name} 
+                    class="is-rounded"
+                    style="object-fit: cover; height: 100%; border-radius: 6px;" 
+                />
+            </figure>
+        </div>
+        <div class="media-content">
+            <strong>{item.name}</strong><br>
+            <span class="is-size-7 has-text-grey">{item.shop}</span>
+        </div>
+    </div>
+</td>
+                                    <td class="has-text-centered is-vcentered">{item.qty || 1}</td>
+                                    <td class="has-text-right is-vcentered">{item.price.toLocaleString()} ฿</td>
                                 </tr>
                             {/each}
                         </tbody>
@@ -69,3 +82,11 @@
         </div>
     </div>
 </section>
+
+<style>
+    .table td figure img {
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+}
+</style>

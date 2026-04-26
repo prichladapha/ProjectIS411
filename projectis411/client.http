@@ -210,7 +210,7 @@ POST http://127.0.0.1:8000/products/search
 GET http://127.0.0.1:8000/posts/
 
 
-### 2. สร้างโพสต์
+### 2. สร้างโพสต์หลัก
 
 ### โพสต์ของ ลีน่าจัง (id: 4)
 POST http://127.0.0.1:8000/posts/
@@ -266,6 +266,20 @@ POST http://127.0.0.1:8000/posts/
     "reposts": 3,
     "shares": 2
 }
+
+### โพสต์เพิ่มเติม
+POST http://127.0.0.1:8000/posts/
+
+
+{
+    "content": "สวยมั้ยจ้า...หลานๆ",
+    "image_url": "https://i.pinimg.com/474x/15/2b/df/152bdfaaba6ac82119b6c5fe5d40e501.jpg",
+    "customer_id": 4,
+    "likes": 24,
+    "reposts": 5,
+    "shares": 2
+}
+
 
 ### 3. ดึงรายละเอียดรายโพสต์ (พร้อมคอมเมนต์)
 # เปลี่ยนเลข 1 เป็น id ของโพสต์ที่มีจริง

@@ -182,14 +182,38 @@ def validate_product_for_order(product: ProductDB, item_qty: int):
     return True
 
 def process_order_logic(session, cus_id, items_to_process, shipping_cost):
+    total_price = 0
+
     for item in items_to_process:
         product = session.get(ProductDB, item.product_id)
-        
-        #ตรวจสอบสินค้าก่อนทำขั้นตอนต่อไป
         validate_product_for_order(product, item.qty)
-        
-        # ถ้าผ่านด่านข้างบนมาได้ ถึงจะเริ่มคำนวณเงิน...
         total_price += product.price * item.qty
+
+    # ← สร้าง order
+    new_order = OrderDB(
+        cus_id=cus_id,
+        total_price=total_price,
+        shipping_cost=shipping_cost,
+        grand_total=total_price + shipping_cost,
+        order_status="pending"
+    )
+    session.add(new_order)
+    session.flush()  # ได้ order_id ก่อน commit
+
+    # ← สร้าง order items
+    for item in items_to_process:
+        product = session.get(ProductDB, item.product_id)
+        order_item = OrderItemDB(
+            order_id=new_order.order_id,
+            product_id=item.product_id,
+            qty=item.qty,
+            price=product.price
+        )
+        session.add(order_item)
+        product.product_status = "reserved"
+        session.add(product)
+
+    return new_order  # ← return กลับไปให้ checkout
 
 #ซื้อเลย (Buy Now)
 @app.post("/create-order/")
@@ -209,25 +233,50 @@ async def create_order(order: OrderCreate):
 @app.post("/orders/checkout/{cus_id}")
 async def checkout(cus_id: int):
     with Session(engine) as session:
-        # ดึงของจากตะกร้าใน DB มาก่อน
         cart_items = session.exec(select(CartItemDB).where(CartItemDB.cus_id == cus_id)).all()
+        
         if not cart_items:
-            raise HTTPException(status_code=400, detail="Cart is empty")
+            raise HTTPException(status_code=400, detail="ตะกร้าว่างเปล่าจ้า")
 
-        try:
-            #ส่งของจากตะกร้าไปให้
-            new_order = process_order_logic(session, cus_id, cart_items, 50.0)
-            
-            # พอทำเสร็จต้อง "ล้างตะกร้า"
-            for item in cart_items:
-                session.delete(item)
-                
-            session.commit()
-            session.refresh(new_order)
-            return {"message": "Order created from Cart", "order_id": new_order.order_id}
-        except Exception as e:
-            session.rollback()
-            raise e
+        # คำนวณ total ก่อน
+        total_price = 0
+        for item in cart_items:
+            product = session.get(ProductDB, item.product_id)
+            if product:
+                total_price += product.price * item.qty
+
+        shipping_cost = 50.0
+
+        # สร้าง order พร้อม field ครบ
+        new_order = OrderDB(
+            cus_id=cus_id,
+            total_price=total_price,
+            shipping_cost=shipping_cost,
+            grand_total=total_price + shipping_cost,
+            order_status="pending"
+        )
+        session.add(new_order)
+        session.commit()
+        session.refresh(new_order)
+
+        # สร้าง order items + ลบ cart
+        for item in cart_items:
+            product = session.get(ProductDB, item.product_id)
+            order_item = OrderItemDB(
+                order_id=new_order.order_id,
+                product_id=item.product_id,
+                qty=item.qty,
+                price=product.price if product else 0
+            )
+            session.add(order_item)
+            session.delete(item)
+
+            if product:
+                product.product_status = "sold"
+                session.add(product)
+
+        session.commit()
+        return {"message": "สั่งซื้อสำเร็จ", "order_id": new_order.order_id}
         
 #get all order
 @app.get("/orders/")
@@ -253,7 +302,15 @@ async def Get_order_by_id(order_id: int) -> OrderOut:
         detail="Order not found"
     )
 
+@app.get("/orders/customer/{cus_id}")
+async def get_orders_by_customer(cus_id: int):
+    with Session(engine) as session:
+        orders = session.exec(
+            select(OrderDB).where(OrderDB.cus_id == cus_id)
+        ).all()
+        return orders
 #get order พร้อม item ใช้ where แทนการวน loop
+
 @app.get("/order_items/{order_id}")
 async def get_order_item(order_id: int):
     with Session(engine) as session:
@@ -649,6 +706,7 @@ async def get_cart(cus_id: int):
                     "name": product.pname,
                     "price": product.price,
                     "shop": product.brand,
+                    "description": product.description,
                     "selected": True, # ให้ติ๊กถูกไว้เลยตั้งแต่แรก
                     "img": product.image_url or 'https://placehold.co/400x400'
                 })
@@ -714,40 +772,56 @@ async def get_all_posts() -> list[dict]:
         return final_result
 
 
-# 2. ดึงรายละเอียดโพสต์รายอัน (สำหรับหน้า Post Detail)
+# 2. ดึงรายละเอียดโพสต์รายอัน พร้อมเม้นท์ (สำหรับหน้า Post Detail)
+# ในไฟล์ main.py
 @app.get("/posts/{post_id}")
-async def get_post_by_id(post_id: int) -> dict:
+async def get_post_detail(post_id: int):
     with Session(engine) as session:
-        post = session.get(PostDB, post_id)
-        if not post:
+        # 1. ดึงข้อมูลโพสต์ (ใช้ post_id ตามในรูปของคุณ)
+        # ในรูปคอลัมน์ชื่อ post_id ดังนั้นเราต้องใช้คำสั่งดึงให้ถูก
+        statement = select(PostDB).where(PostDB.post_id == post_id)
+        db_post = session.exec(statement).first()
+       
+        if not db_post:
             raise HTTPException(status_code=404, detail="Post not found")
 
-        customer = session.get(CustomerDB, post.customer_id)
-        
-        # ดึงคอมเมนต์ของโพสต์นี้
-        comments_raw = session.exec(
-            select(CommentDB).where(CommentDB.post_id == post_id)
-        ).all()
 
-        formatted_comments = []
-        for c in comments_raw:
-            commenter = session.get(CustomerDB, c.customer_id)
-            formatted_comments.append({
-                "name": commenter.display_name if commenter else "Unknown",
-                "avatar": commenter.avatar if commenter else "",
+        # 2. ไปดึงข้อมูลคนโพสต์จาก CustomerDB โดยใช้ customer_id จากตารางโพสต์
+        author = session.get(CustomerDB, db_post.customer_id)
+
+
+        # 3. ดึงคอมเมนต์ (เหมือนเดิม)
+        comment_stmt = select(CommentDB).where(CommentDB.post_id == post_id)
+        db_comments = session.exec(comment_stmt).all()
+
+
+        comments_list = []
+        for c in db_comments:
+            c_user = session.get(CustomerDB, c.customer_id)
+            comments_list.append({
+                "name": c_user.display_name if c_user else "Guest",
+                "avatar": c_user.avatar if c_user else "https://placehold.co/100x100",
                 "text": c.text,
-                "time": "Just now" # หรือใช้ c.time_str
+                "time": "Just now"
             })
 
+
+        # 4. ส่งกลับโครงสร้างข้อมูลที่ถูกต้อง (Mapping ชื่อฟิลด์ให้ตรงกับรูป)
         return {
-            "post_info": post,
-            "author": {
-                "display_name": customer.display_name if customer else "Unknown",
-                "username": customer.username if customer else "unknown",
-                "avatar": customer.avatar if customer else ""
+            "post_info": {
+                "id": db_post.post_id,         # ในรูปคุณใช้ชื่อ post_id
+                "content": db_post.content,
+                "image": db_post.image_url,    # ในรูปคุณใช้ชื่อ image_url
+                "likes": db_post.likes,
+                "reposts": db_post.reposts,
+                "shares": db_post.shares,
+                "name": author.display_name if author else "Unknown",
+                "username": author.username if author else "user",
+                "avatar": author.avatar if author else ""
             },
-            "staticComments": formatted_comments
+            "static_comments": comments_list
         }
+
 
 # 3. สร้างโพสต์ใหม่
 @app.post("/posts/")
@@ -795,7 +869,8 @@ async def add_comment(post_id: int, comment: Comment) -> dict:
             "time": "Just now"
         }
 
-@app.post("/Signin")
+
+@app.post("/signin")
 def login(credentials: SigninRequest):
     
     with Session(engine) as session:
@@ -812,15 +887,29 @@ def login(credentials: SigninRequest):
                 status_code=401, 
                 detail="อีเมลหรือรหัสผ่านไม่ถูกต้อง"
             )
+        # หา seller ที่ผูกกับ email นี้
         seller = session.exec(
             select(SellerDB).where(SellerDB.email == credentials.email)
         ).first()
-        
+
+        # ถ้ายังไม่มี seller → สร้างให้อัตโนมัติเลย
+        if not seller:
+            seller = SellerDB(
+                seller_name=user.display_name or user.username,
+                email=user.email,
+                seller_phone=user.customer_phone or "",
+                store_name=f"{user.display_name or user.username}'s Shop",
+                verification_status="verified"
+            )
+            session.add(seller)
+            session.commit()
+            session.refresh(seller)
+
         return {
             "message": "Login successful",
             "customer_id": user.customer_id,
             "username": user.username,
             "display_name": user.display_name, 
-            "avatar": user.avatar,
+            "avatar": user.avatar,             
             "seller_id": seller.seller_id if seller else None
         }

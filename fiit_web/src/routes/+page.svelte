@@ -10,6 +10,8 @@
   let activeCategory = $state(null);
   let searchQuery = $state("");
 
+  
+
   // ---- Svelte Action: ส่ง search/filter ไป POST /products/search ----
   function searchAction(node) {
     async function doSearch() {
@@ -53,7 +55,8 @@
     // เช็คว่าชื่อสินค้ามีคำที่ค้นหาไหม (แปลงเป็นตัวพิมพ์เล็กทั้งคู่เพื่อให้หาง่าย)
       const matchesSearch = p.pname.toLowerCase().includes(searchQuery.toLowerCase());
       // เช็คว่าตรงกับหมวดหมู่ที่เลือกไหม (ถ้าไม่ได้เลือก ให้ผ่านหมด)
-      return matchesSearch;
+      const isAvailable = p.product_status === "available";
+      return matchesSearch && isAvailable;
     })
   );
 

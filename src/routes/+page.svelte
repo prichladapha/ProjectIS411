@@ -20,7 +20,7 @@
         page_size: 20
       };
 
-      const res = await fetch('http://localhost:8000/products/search', {
+      const res = await fetch('https://31r92grm-8000.asse.devtunnels.ms', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
@@ -74,7 +74,7 @@
         page_size: 20
     };
 
-    const res = await fetch('http://localhost:8000/products/search', {
+    const res = await fetch('https://31r92grm-8000.asse.devtunnels.ms', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)

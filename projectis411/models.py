@@ -21,6 +21,7 @@ class ProductOut(Product):
     image_url: str | None = None
 
 class ProductDB(SQLModel, table=True):
+    __tablename__ = "productdb"
     product_id:int | None = Field(default=None, primary_key=True)
     pname: str
     price: float | None = None
@@ -48,6 +49,7 @@ class Order(BaseModel):
     order_status: OrderStatus = OrderStatus.pending
 
 class OrderDB(SQLModel, table=True):
+    __tablename__ = "orderdb"
     order_id: int | None = Field(default=None, primary_key=True)
     cus_id: int
     total_price: float
@@ -73,6 +75,7 @@ class OrderItem(BaseModel):
     price: float
 
 class OrderItemDB(SQLModel, table=True):
+    __tablename__ = "orderitemdb"
     orderitem_id: int | None = Field(default=None, primary_key=True)
     order_id: int
     product_id: int 
@@ -113,6 +116,7 @@ class PaymentOut(Payment):
     payment_id: int
  
 class PaymentDB(SQLModel, table=True):
+    __tablename__ = "paymentdb"
     payment_id: int | None = Field(default=None, primary_key=True)
     order_id: int
     payment_method: str
@@ -134,6 +138,7 @@ class CustomerOut(Customer):
     customer_id: int
 
 class CustomerDB(SQLModel, table=True):
+    __tablename__ = "customerdb"
     customer_id: int | None = Field(default=None, primary_key=True)
     username: str
     email: str
@@ -152,6 +157,7 @@ class Address(BaseModel):
     address_type: str
 
 class AddressDB(SQLModel, table=True):
+    __tablename__ = "addressdb"
     address_id: int | None = Field(default=None, primary_key=True)
     cus_id: int
     address_line: str
@@ -169,6 +175,7 @@ class Shipment(BaseModel):
     shipment_status : str
 
 class ShipmentDB(SQLModel, table=True):
+    __tablename__ = "shipmentdb"
     shipment_id: int | None = Field(default=None, primary_key=True)
     order_id : int
     address_id : int
@@ -188,6 +195,7 @@ class SellerOut(Seller):
     seller_id: int
 
 class SellerDB(SQLModel, table=True):
+    __tablename__ = "sellerdb"
     seller_id : int | None = Field(default=None, primary_key=True)
     seller_name : str
     email : str
@@ -226,6 +234,7 @@ class ProductSearchRequest(BaseModel):
 
 #Cart
 class CartItemDB(SQLModel, table=True):
+    __tablename__ = "cartitemdb"
     cartitem_id: int | None = Field(default=None, primary_key=True)
     cus_id: int        # ไอดีลูกค้าที่หยิบของ
     product_id: int    # ไอดีสินค้าที่หยิบ
@@ -240,6 +249,7 @@ class CartItemCreate(SQLModel):
 # community
 # --- Post Model ---
 class Post(SQLModel):
+    __tablename__ = "postdb"
     content: str
     image_url: Optional[str] = None
     likes: int = 0
@@ -261,6 +271,7 @@ class PostDB(Post, table=True):
 
 # --- Comment Model ---
 class Comment(SQLModel):
+    __tablename__ = "commentdb"
     text: str
     post_id: int      # อ้างอิง id ของโพสต์
     customer_id: int  # อ้างอิง id ของคนคอมเมนต์
@@ -275,6 +286,8 @@ class CommentOut(Comment):
 class CommentDB(Comment, table=True):
     comment_id: Optional[int] = Field(default=None, primary_key=True)
 
+
+#--- Signin ----
 class SigninRequest(BaseModel):
     email: str
     password: str

@@ -1,5 +1,6 @@
 <script>
   import { goto } from '$app/navigation';
+  import { currentUser } from '$lib/shared';
 
   let { data } = $props();
 
@@ -8,17 +9,12 @@
   let brand = $state('');
   let description = $state('');
   let categoryID = $state('');
-  let seller_id = $state(data?.user?.seller_id ?? '');
+  let seller_id = $state($currentUser?.seller_id ?? '');
   let tags = $state('');
   let product_status = $state('available');
   let image_url = $state('');
 
   let mainPreview = $state('');
-  let frontPreview = $state('');
-  let backPreview = $state('');
-  let checkFlaw = $state(false);
-  let flawDetail = $state('');
-  let condition = $state('');
   let loading = $state(false);
   let errorMsg = $state('');
 
@@ -27,18 +23,6 @@
     if (!file) return;
     mainPreview = URL.createObjectURL(file);
     image_url = mainPreview;
-  }
-
-  function handleFrontPhoto(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    frontPreview = URL.createObjectURL(file);
-  }
-
-  function handleBackPhoto(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    backPreview = URL.createObjectURL(file);
   }
 
   async function handleSave() {
@@ -98,26 +82,31 @@
     ADD PRODUCT
   </span>
 </div>
-  <button class="button is-small is-white is-rounded" onclick={() => goto('/settings')}>
-    <span class="icon is-small"><i class="fas fa-cog"></i></span>
-  </button>
 </div>
 
 <section class="section pt-4 pb-6">
   <div class="container" style="max-width:540px;">
 
     <!-- รูปหลัก -->
-    <div class="has-text-centered mb-5">
-      <label class="photo-circle">
-        {#if mainPreview}
-          <img src={mainPreview} alt="preview" class="photo-preview-circle">
-        {:else}
-          <span class="is-size-3 has-text-grey-light">+</span>
-        {/if}
-        <input type="file" accept="image/*" onchange={handleMainPhoto} style="display:none;">
-      </label>
-      <p class="is-size-7 has-text-grey mt-3">อัพโหลดรูปหลัก</p>
-    </div>
+   <div class="field">
+  <label class="label is-small">PRODUCT IMAGE URL</label>
+  <div class="control">
+    <input 
+      class="input" 
+      type="text" 
+      placeholder="https://example.com/image.jpg"
+      bind:value={image_url}
+      oninput={() => mainPreview = image_url}
+    >
+  </div>
+</div>
+
+<!-- preview -->
+{#if mainPreview}
+  <figure class="image is-128x128 mb-4" style="margin:0 auto;">
+    <img class="is-rounded" src={mainPreview} alt="preview" style="object-fit:cover; width:128px; height:128px;">
+  </figure>
+{/if}
 
     {#if errorMsg}
       <div class="notification is-danger is-light mb-4">{errorMsg}</div>

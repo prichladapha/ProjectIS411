@@ -1,14 +1,28 @@
 <script>
 	import favicon from '$lib/assets/favicon.svg';
-	import { cartStore } from '$lib/cart.svelte.js';
+	import { onMount } from 'svelte';
+	import { cartStore, loadCart } from '$lib/cart.svelte.js';
 	import { currentUser } from '$lib/shared';
+	import { browser } from '$app/environment';
 
 	let { data, children } = $props();
 	let menuOpen = $state(false);
 
+	if (browser && data.user) {
+    	localStorage.setItem('current_user_id', data.user.customer_id);
+	}
+
 	// ดึงข้อมูล user จาก Server (ผ่านไฟล์ +layout.server.js)
 	let user = $derived(data.user);
 	currentUser.set(data.user);
+
+	onMount(async () => {
+    if (user && user.customer_id) {
+        // บรรทัดนี้สำคัญมาก! ถ้าไม่มี ปุ่ม Add to Cart จะไม่รู้ว่าเป็นของใคร
+        localStorage.setItem("current_user_id", user.customer_id.toString());
+        await loadCart(user.customer_id);
+    }
+});
 </script>
 
 <svelte:head>

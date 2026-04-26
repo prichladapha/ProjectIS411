@@ -1,5 +1,5 @@
 // กำหนด URL ตรงนี้ที่เดียว 
-const API_BASE_URL = "http://127.0.0.1:8000";
+const API_BASE_URL = "http://localhost:8000";
 
 export const cartStore = $state({
     items: [],
@@ -58,7 +58,7 @@ export async function addToCart(product) {
             alert("Added to cart!");
         }
     } catch (err) {
-        alert("Connection error. ");
+        alert("ไอ้บ้า ผิดตรงนี้แหละ ");
     }
 }
 
@@ -98,7 +98,7 @@ export async function checkout() {
             await loadCart(); 
             
             // ส่งกลับหน้าแรก หรือหน้าขอบคุณ
-            window.location.href = "/"; 
+            window.location.href = "/myorder"; 
         } else {
             const err = await res.json();
             alert("Error: " + err.detail);

@@ -1,22 +1,23 @@
 <script>
   import { goto } from '$app/navigation';
+  import { currentUser } from '$lib/shared';
 
   let { data } = $props();
 
   // ── ข้อมูล shop จาก load function ──
-  let shop = $state(data?.shop ?? {
-    name: 'น้องเทส shop',
+  let shop = $state({
+    name: $currentUser?.display_name ?? $currentUser?.username ?? 'Guest',
     verified: true,
-    followers: 12,
-    following: 47,
-    avatar_url: null,
+    followers: 0,
+    following: 0,
+    avatar_url: $currentUser?.avatar ?? null,
   });
 
-  let stats = $state(data?.stats ?? {
-    toShip: 3,
-    cancelled: 1,
+   let stats = $state(data?.stats ?? {
+    toShip: 0,
+    cancelled: 0,
     returned: 0,
-    review: 5,
+    review: 0,
   });
 
   let products = $state(data?.products ?? [
@@ -69,9 +70,6 @@
     SHOP PROFILE
   </span>
 </div>
-  <button class="button is-small is-white is-rounded" onclick={() => goto('/settings')}>
-    <span class="icon is-small"><i class="fas fa-cog"></i></span>
-  </button>
 </div>
 
 <section class="section pt-4 pb-6">

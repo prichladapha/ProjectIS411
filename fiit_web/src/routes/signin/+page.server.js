@@ -35,7 +35,7 @@ export const actions = {
 
         // ── Real API Login ──
         try {
-            const response = await fetch('http://127.0.0.1:8000/Signin', {
+            const response = await fetch('http://127.0.0.1:8000/signin', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })
@@ -46,6 +46,7 @@ export const actions = {
             }
  
             const result = await response.json();
+            console.log("Login Result from API:", result);
             // result = { customer_id, username, display_name, avatar, seller_id }
  
             cookies.set('session_token', 'real-token', {
@@ -57,14 +58,15 @@ export const actions = {
             cookies.set('user_data', JSON.stringify({
                 customer_id:  result.customer_id,
                 username:     result.username,
-                display_name: result.display_name,
-                avatar:       result.avatar,
-                seller_id:    result.seller_id ?? null,
+                display_name: result.display_name || result.username,
+                avatar:       result.avatar || '',
+                seller_id:    result.seller_id || null,
                 email,
             }), {
                 path: '/',
                 maxAge: 60 * 60 * 24
             });
+            throw redirect(303, '/profile');
  
         } catch (err) {
             if (err.status === 303) throw err;

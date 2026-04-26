@@ -1,160 +1,149 @@
 <script>
   import { currentUser } from '$lib/shared';
-  import { goto } from '$app/navigation';
+  import { enhance } from '$app/forms';
 
-  let { data } = $props();
+  // 1. รับข้อมูล: 'data' (จาก load) และ 'form' (จาก action เมื่อกดส่งคอมเมนต์)
+  let { data, form } = $props();
 
-  // State สำหรับ Svelte 5
-  let staticComments = $state(data.post.staticComments || []);
+  // 2. Local State: จัดการ UI เล็กๆ น้อยๆ เช่น การเปิด Dropdown หรือสถานะการพิมพ์
   let commentText = $state("");
   let isTyping = $state(false);
   let dropdownOpen = $state(false);
   let sortMode = $state('Recent');
 
-  let post = $derived(data.post);
+  // 3. Derived State: ใช้ $derived เพื่อคำนวณค่าใหม่ทุกครั้งที่ data เปลี่ยน 
+  let post = $derived(data.post || {});
+  let staticComments = $derived(data.post?.staticComments || []);
 
-  async function postComment() {
-    if (!$currentUser) {
-      goto('/signin');
-      return;
-    }
-    if (commentText.trim() === "") return;
-
-    // URL ต้อตรงกับ Backend (@app.post("/posts/{post_id}/comments"))
-    const res = await fetch(`http://127.0.0.1:8000/posts/${post.id}/comments`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        text: commentText.trim(),
-        customer_id: $currentUser.customer_id
-        // ไม่ต้องส่ง post_id ใน Body แล้ว เพราะเราส่งไปทาง URL แทนตาม Backend ใหม่
-      })
-    });
-
-    if (res.ok) {
-      const newCommentFromServer = await res.json();
-      
-      // เอาข้อมูลที่ Backend return กลับมา 
-      staticComments = [...staticComments, {
-        name: newCommentFromServer.name,
-        avatar: newCommentFromServer.avatar,
-        text: newCommentFromServer.text,
-        time: newCommentFromServer.time
-      }];
-      
-      commentText = "";
+  // 4. Side Effect: เมื่อส่งคอมเมนต์สำเร็จ ให้เคลียร์ช่องกรอกข้อมูล
+  $effect(() => {
+    if (form?.success) {
+      commentText = ""; 
       isTyping = false;
     }
-  }
+  });
 </script>
 
 <section class="section pt-3">
   <div class="post-detail-card">
-
-    <div class="is-flex is-align-items-center mb-2">
-      <figure class="image is-32x32 mr-2">
-        <img class="is-rounded" src={post.avatar} alt="avatar"
-          style="object-fit:cover; width:32px; height:32px;">
+    <div class="is-flex is-align-items-center mb-3">
+      <figure class="image is-40x40 mr-3">
+        <img src={post.avatar} alt="avatar"
+          style="object-fit:cover; width:40px; height:40px; border-radius: 50%;">
       </figure>
-      <div>
-        <p style="font-size:0.85rem; font-weight:600; margin:0;">{post.name}</p>
-        <p style="font-size:0.75rem; color:#888; margin:0;">@{post.username}</p>
+      <div style="line-height: 1.2;">
+        <p class="has-text-weight-bold" style="font-size:0.95rem;">{post.name}</p>
+        <p style="font-size:0.8rem; color:#888;">@{post.username}</p>
       </div>
     </div>
 
-    <p style="font-size:0.85rem; margin-bottom:10px;">{post.content}</p>
+    <p class="mb-3" style="font-size:0.95rem; line-height: 1.5;">{post.content}</p>
 
     {#if post.image}
-      <div style="display:flex; justify-content:center; overflow-x:auto; gap:8px; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;">
-        <img src={post.image} alt="post"
-          style="aspect-ratio:4/5; width:260px; border-radius:8px; flex-shrink:0; scroll-snap-align:start; object-fit:cover;" />
+      <div class="mb-3" style="border-radius: 12px; overflow: hidden; border: 1px solid #efefef;">
+        <img src={post.image} alt="post" style="width:100%; max-height:400px; object-fit:cover;" />
       </div>
     {/if}
 
-    <div class="is-flex mt-3" style="justify-content:space-between;">
-      <span class="icon-text" style="font-size:0.8rem;">
-        <span class="icon is-small has-text-danger"><i class="fas fa-heart"></i></span>
+    <div class="is-flex mt-3 pb-3" style="justify-content:space-between; border-bottom: 1px solid #f5f5f5;">
+      <span class="icon-text has-text-grey" style="font-size:0.8rem;">
+        <span class="icon is-small"><i class="far fa-heart"></i></span>
         <span>{post.likes ?? 0}</span>
       </span>
-      <span class="icon-text" style="font-size:0.8rem;">
-        <span class="icon is-small has-text-info"><i class="fas fa-comment"></i></span>
+      <span class="icon-text has-text-grey" style="font-size:0.8rem;">
+        <span class="icon is-small"><i class="far fa-comment"></i></span>
         <span>{staticComments.length}</span>
       </span>
-      <span class="icon-text" style="font-size:0.8rem;">
-        <span class="icon is-small has-text-success"><i class="fas fa-retweet"></i></span>
+      <span class="icon-text has-text-grey" style="font-size:0.8rem;">
+        <span class="icon is-small"><i class="fas fa-retweet"></i></span>
         <span>{post.reposts ?? 0}</span>
       </span>
-      <span class="icon-text" style="font-size:0.8rem;">
-        <span class="icon is-small has-text-grey"><i class="fas fa-paper-plane"></i></span>
+      <span class="icon-text has-text-grey" style="font-size:0.8rem;">
+        <span class="icon is-small"><i class="far fa-paper-plane"></i></span>
         <span>{post.shares ?? 0}</span>
       </span>
     </div>
 
-    <div style="border-top: 1px solid #eaeaea; border-bottom: 1px solid #eaeaea; padding: 8px 0; margin-top:12px;">
+    <div class="py-2 mb-4">
       <div style="position:relative; display:inline-block;">
-        <button class="button is-white is-small" onclick={() => dropdownOpen = !dropdownOpen}>
-          <span style="font-size:0.8rem;">{sortMode}</span>
-          <span class="icon is-small"><i class="fas fa-chevron-down"></i></span>
+        <button class="button is-white is-small px-0" onclick={() => dropdownOpen = !dropdownOpen}>
+          <span class="has-text-weight-semibold" style="font-size:0.8rem;">{sortMode}</span>
+          <span class="icon is-small"><i class="fas fa-chevron-down" style="font-size: 0.6rem;"></i></span>
         </button>
 
         {#if dropdownOpen}
-          <div style="position:absolute; background:white; border:1px solid #eaeaea; border-radius:6px; z-index:10; min-width:120px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+          <div class="dropdown-content-custom">
             {#each ['Recent', 'Popular'] as mode}
-              <a class="dropdown-item" style="font-size:0.8rem; display:block; padding:8px 16px; cursor:pointer;"
-                onclick={() => { sortMode = mode; dropdownOpen = false; }}>
+              <button class="dropdown-item-btn" onclick={() => { sortMode = mode; dropdownOpen = false; }}>
                 {mode}
-              </a>
+              </button>
             {/each}
           </div>
         {/if}
       </div>
     </div>
 
-    <div class="mt-4">
+    <div class="comments-container">
       {#each staticComments as c}
-        <div class="is-flex mb-4" style="gap:10px;">
+        <div class="is-flex mb-4" style="gap:12px;">
           <figure class="image is-32x32" style="flex-shrink:0;">
-            <img class="is-rounded" src={c.avatar} alt="avatar"
-              style="object-fit:cover; width:32px; height:32px;" />
+            <img src={c.avatar} alt="avatar"
+              style="object-fit:cover; width:32px; height:32px; border-radius: 50%;" />
           </figure>
           <div style="flex:1;">
-            <p style="font-size:0.8rem; font-weight:600; margin:0;">{c.name}</p>
-            <p style="font-size:0.8rem; margin:0; color: #333;">{c.text}</p>
-            <p style="font-size:0.72rem; color:#aaa; margin-top:2px;">{c.time || 'Just now'} · <a>Like</a> · <a>Reply</a></p>
+            <div class="comment-bubble">
+                <p class="has-text-weight-bold" style="font-size:0.8rem; margin-bottom: 2px;">{c.name}</p>
+                <p style="font-size:0.85rem; color: #333;">{c.text}</p>
+            </div>
+            <p style="font-size:0.72rem; color:#aaa; margin-top:4px; margin-left: 4px;">
+                {c.time || 'Just now'} · <a class="has-text-grey">Like</a> · <a class="has-text-grey">Reply</a>
+            </p>
           </div>
         </div>
       {/each}
 
-      <div class="is-flex mt-4" style="gap:10px;">
+      <div class="is-flex mt-5" style="gap:12px;">
         <figure class="image is-32x32" style="flex-shrink:0;">
-          <img class="is-rounded" src={$currentUser?.avatar || 'https://placehold.co/100x100'} 
-               alt="me" style="object-fit:cover; width:32px; height:32px;" />
+          <img src={$currentUser?.avatar || 'https://placehold.co/100x100'} 
+               alt="me" style="object-fit:cover; width:32px; height:32px; border-radius: 50%;" />
         </figure>
 
         <div style="flex:1;">
-          {#if isTyping}
-            <p style="font-size:0.72rem; color:#aaa; margin-bottom:4px;">
-              Reply to <strong>{post.username}</strong>
-            </p>
-          {/if}
+          <form method="POST" use:enhance>
+            <input type="hidden" name="customer_id" value={$currentUser?.customer_id} />
 
-          <textarea class="textarea" style="font-size:0.85rem; min-height: 2.5em; border-radius: 8px;"
-            bind:value={commentText}
-            placeholder="Add a comment..."
-            onfocus={() => isTyping = true}>
-          </textarea>
+            {#if form?.error}
+              <p class="has-text-danger is-size-7 mb-2">{form.error}</p>
+            {/if}
 
-          {#if isTyping || commentText}
-            <div class="is-flex is-align-items-center is-justify-content-space-between mt-2">
-              <div class="is-flex" style="gap:12px; color: #666;">
-                <span class="icon is-small" style="cursor:pointer;"><i class="fas fa-image"></i></span>
-                <span style="cursor:pointer; font-size:0.7rem; font-weight:bold; border:1px solid #ccc; border-radius:4px; padding:0 4px;">GIF</span>
+            {#if isTyping}
+              <p style="font-size:0.72rem; color:#aaa; margin-bottom:4px;">
+                Reply to <strong>{post.username}</strong>
+              </p>
+            {/if}
+
+            <textarea class="textarea comment-textarea" 
+              name="commentText"
+              bind:value={commentText}
+              placeholder="Add a comment..."
+              onfocus={() => isTyping = true}
+              rows={isTyping ? 3 : 1}>
+            </textarea>
+
+            {#if isTyping || commentText}
+              <div class="is-flex is-align-items-center is-justify-content-space-between mt-2">
+                <div class="is-flex" style="gap:15px; color: #adb5bd;">
+                  <span class="is-clickable action-icon-small"><i class="far fa-image"></i></span>
+                  <span class="is-clickable action-icon-small"><i class="far fa-smile"></i></span>
+                </div>
+                <button type="submit" 
+                        class="button is-primary is-small is-rounded px-4 has-text-weight-bold"
+                        disabled={!commentText.trim()}>
+                  Post
+                </button>
               </div>
-              <button class="button is-primary is-small is-rounded" onclick={postComment}>
-                Post
-              </button>
-            </div>
-          {/if}
+            {/if}
+          </form>
         </div>
       </div>
     </div>
@@ -167,11 +156,55 @@
     width: 100%;
     margin: 0 auto;
     background: white;
-    border-radius: 12px;
     padding: 16px;
-    border: 1px solid #efefef;
   }
-  .dropdown-item:hover {
-    background-color: #f5f5f5;
+
+  .comment-bubble {
+    background-color: #f0f2f5;
+    padding: 8px 12px;
+    border-radius: 18px;
+    display: inline-block;
+    max-width: 100%;
   }
+
+  .comment-textarea {
+    font-size: 0.9rem;
+    border-radius: 20px;
+    background-color: #f0f2f5;
+    border: none;
+    box-shadow: none;
+    resize: none;
+    transition: all 0.2s;
+  }
+  .comment-textarea:focus {
+    background-color: #fff;
+    border: 1px solid #eee;
+  }
+
+  .dropdown-content-custom {
+    position:absolute; 
+    background:white; 
+    border:1px solid #efefef; 
+    border-radius:12px; 
+    z-index:10; 
+    min-width:120px; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    padding: 4px;
+  }
+
+  .dropdown-item-btn {
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    border-radius: 8px;
+  }
+  .dropdown-item-btn:hover { background-color: #f5f5f5; }
+
+  .action-icon-small { font-size: 1rem; transition: color 0.2s; }
+  .action-icon-small:hover { color: #00d1b2; }
 </style>
+
