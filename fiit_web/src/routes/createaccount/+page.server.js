@@ -1,46 +1,60 @@
-import { fail, redirect } from '@sveltejs/kit';
+import { fail } from '@sveltejs/kit';
 
 export const actions = {
     default: async ({ request, fetch }) => {
-        const data = await request.formData();
+        const formData = await request.formData();
         
-        const username = data.get('name');
-        const display_name = data.get('display_name');
-        const email = data.get('email');
-        const phone = data.get('phone'); 
-        const password = data.get('password');
-        const confirmPassword = data.get('confirmPassword');
+        const username = formData.get('name'); 
+        const display_name = formData.get('display_name');
+        const email = formData.get('email');
+        const phone = formData.get('phone'); 
+        const password = formData.get('password');
+        const confirmPassword = formData.get('confirmPassword');
         
         if (password !== confirmPassword) {
-            return fail(400, { error: 'รหัสผ่านไม่ตรงกัน', name: username, email, phone, display_name });
+            return fail(400, { 
+                error: 'รหัสผ่านไม่ตรงกัน', 
+                name: username, email, phone, display_name 
+            });
         }
 
         try {
-         
+  
+            const payload = [{
+                "username": String(username),
+                "email": String(email),
+                "customer_phone": String(phone), 
+                "password": String(password),
+                "display_name": String(display_name || username), 
+                "avatar": "" 
+            }];
+
             const response = await fetch('http://127.0.0.1:8000/customers/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    username: username,
-                    email: email,
-                    customer_phone: phone, 
-                    password: password,
-                    display_name: display_name || username, 
-                    avatar: "" 
-                })
+                body: JSON.stringify(payload)
             });
 
+            const result = await response.json();
+
             if (!response.ok) {
-                const result = await response.json();
-                return fail(response.status, { error: result.detail || 'สมัครไม่สำเร็จ มีบางอย่างผิดพลาด', name: username, email, phone, display_name });
+                let msg = 'สมัครสมาชิกไม่สำเร็จ';
+                if (result.detail) {
+                    msg = Array.isArray(result.detail) ? result.detail[0].msg : result.detail;
+                }
+                return fail(response.status, { error: msg, name: username, email, phone, display_name });
             }
 
-        } catch (err) {
-          
-            return fail(500, { error: 'ยังไม่ได้รัน Fastapi หรือ ไม่มีฐานข้อมูลใน DB', name: username, email, phone, display_name });
-        }
+            return { 
+                success: true, 
+                message: 'บันทึกข้อมูลเข้า Database เรียบร้อยแล้ว!' 
+            };
 
-     
-        throw redirect(303, '/signin');
+        } catch (err) {
+            return fail(500, { 
+                error: 'ติดต่อเซิร์ฟเวอร์ไม่ได้ (รัน FastAPI หรือยัง?)', 
+                name: username, email, phone, display_name 
+            });
+        }
     }
 };

@@ -1,8 +1,19 @@
-export async function load() {
-  const res = await fetch('http://localhost:8000/categories/');
+const API = 'http://localhost:8000';
 
-  if (!res.ok) return { categories: [] };
+/** @type {import('./$types').PageServerLoad} */
+export async function load({ cookies }) {
+  // อ่าน user จาก cookie ที่ signin set ไว้
+  const raw = cookies.get('user_data');
+  const user = raw ? JSON.parse(raw) : null;
 
-  const categories = await res.json();
-  return { categories };
+  // ดึง categories จาก API
+  let categories = [];
+  try {
+    const res = await fetch(`${API}/categories/`);
+    if (res.ok) categories = await res.json();
+  } catch {
+    categories = [];
+  }
+
+  return { user, categories };
 }

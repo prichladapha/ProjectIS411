@@ -5,9 +5,9 @@
 
   // ── ข้อมูล shop จาก load function ──
   let shop = $state(data?.shop ?? {
-    name: 'cutiecat shop',
+    name: 'น้องเทส shop',
     verified: true,
-    followers: 128,
+    followers: 12,
     following: 47,
     avatar_url: null,
   });
@@ -61,7 +61,7 @@
   <button
     class="button is-ghost px-1"
     style="color:white;"
-    onclick={() => goto('/myshop')}
+    onclick={() => goto('/profile')}
   >
     <span class="icon"><i class="fas fa-arrow-left"></i></span>
   </button>

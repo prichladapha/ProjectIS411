@@ -104,7 +104,8 @@ async def create_product(product: Product) -> ProductOut:
             categoryID=product.categoryID,
             seller_id=product.seller_id,
             tags=product.tags,
-            product_status=product.product_status
+            product_status=product.product_status,
+            image_url=product.image_url
         )
         session.add(db_product)
         session.commit()
@@ -795,22 +796,31 @@ async def add_comment(post_id: int, comment: Comment) -> dict:
         }
 
 @app.post("/Signin")
-async def login(credentials: SigninRequest):
+def login(credentials: SigninRequest):
+    
     with Session(engine) as session:
+        
         statement = select(CustomerDB).where(
             CustomerDB.email == credentials.email,
             CustomerDB.password == credentials.password
         )
+        
         user = session.exec(statement).first()
 
         if not user:
             raise HTTPException(
                 status_code=401, 
-                detail="Invalid email or password"
+                detail="อีเมลหรือรหัสผ่านไม่ถูกต้อง"
             )
+        seller = session.exec(
+            select(SellerDB).where(SellerDB.email == credentials.email)
+        ).first()
         
         return {
             "message": "Login successful",
             "customer_id": user.customer_id,
-            "username": user.username
+            "username": user.username,
+            "display_name": user.display_name, 
+            "avatar": user.avatar,
+            "seller_id": seller.seller_id if seller else None
         }

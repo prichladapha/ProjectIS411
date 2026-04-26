@@ -1,24 +1,22 @@
-export async function load() {
+export async function load({ fetch }) {
   const res = await fetch('http://localhost:8000/posts/');
 
   if (!res.ok) {
     return { posts: [] };
   }
 
-  const raw = await res.json();
+  const rawPosts = await res.json();
 
-  // API ส่ง PostOut มา — map ให้ตรงกับที่ svelte ใช้
-  const posts = raw.map(p => ({
-    id: p.post_id,
-    name: p.customer_name ?? 'Unknown',
-    username: p.customer_username ?? '@unknown',
-    avatar: p.customer_avatar ?? '',
+  // แปลงข้อมูล (Mapping) ให้ใช้ง่ายๆ
+  const posts = rawPosts.map(p => ({
+    id: p.id,
+    name: p.name,
+    username: p.username,
+    avatar: p.avatar,
     content: p.content,
-    image: p.image_url ?? '',
-    likes: 0,
-    reposts: 0,
-    shares: 0,
-    comments: 0,
+    image: p.image, // จาก Backend แปลง image_url เป็น image แล้ว
+    likes: p.likes,
+    comments_count: p.comments // จำนวนคอมเมนต์
   }));
 
   return { posts };

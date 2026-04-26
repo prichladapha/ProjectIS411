@@ -2,6 +2,7 @@
   let { item, onAddToCart, isInCart } = $props();
 </script>
 
+
 <div class="box p-0 has-background-light" style="overflow: hidden;">
 <a href="/product/{item.product_id}">
   <figure class="image is-1by1">

@@ -113,6 +113,12 @@
               {/if}
             {/if}
 
+            {#if form?.success}
+              <div class="notification is-success is-light is-size-7 py-2 mb-3">
+                {form.message}
+              </div>
+            {/if}
+
             {#if form?.error}
               <div class="notification is-danger is-light is-size-7 py-2 mb-3">
                 {form.error}

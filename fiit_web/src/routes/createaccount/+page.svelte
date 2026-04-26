@@ -43,7 +43,7 @@
                   class="input is-primary"
                   type="text"
                   name="display_name" 
-                  placeholder="ชื่อที่จะใช้แสดง(ไม่บังคับ)"
+                  placeholder="ชื่อที่จะใช้แสดง (ไม่บังคับ)"
                   value={form?.display_name ?? ''}
                 />
               </div>
@@ -113,6 +113,12 @@
               {/if}
             {/if}
 
+            {#if form?.success}
+              <div class="notification is-success is-light is-size-7 py-2 mb-3">
+                {form.message}
+              </div>
+            {/if}
+
             {#if form?.error}
               <div class="notification is-danger is-light is-size-7 py-2 mb-3">
                 {form.error}
@@ -123,14 +129,6 @@
               Sign Up
             </button>
           </form>
-
-          <p class="has-text-centered is-size-7 has-text-grey mb-3">or continue with</p>
-
-          <div class="buttons">
-            <button class="button is-light is-fullwidth">Google</button>
-            <button class="button is-light is-fullwidth">Facebook</button>
-            <button class="button is-light is-fullwidth">Apple</button>
-          </div>
 
           <div class="has-text-centered mt-4">
             <p class="is-size-7">

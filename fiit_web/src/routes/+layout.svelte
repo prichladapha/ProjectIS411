@@ -1,12 +1,14 @@
 <script>
 	import favicon from '$lib/assets/favicon.svg';
 	import { cartStore } from '$lib/cart.svelte.js';
+	import { currentUser } from '$lib/shared';
 
 	let { data, children } = $props();
 	let menuOpen = $state(false);
 
 	// ดึงข้อมูล user จาก Server (ผ่านไฟล์ +layout.server.js)
 	let user = $derived(data.user);
+	currentUser.set(data.user);
 </script>
 
 <svelte:head>

@@ -42,8 +42,9 @@
   }
 
   async function handleSave() {
+    console.log('seller_id:', seller_id); 
     errorMsg = '';
-    if (!pname || !price || !brand || !description || !categoryID || !seller_id || !tags || !condition) {
+    if (!pname || !price || !brand || !description || !categoryID || !seller_id || !tags ) {
       errorMsg = 'กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน';
       return;
     }
@@ -81,13 +82,29 @@
 </script>
 
 <!-- Header -->
-<div class="has-background-primary px-4 py-3 is-flex is-align-items-center" style="gap:12px; position:sticky; top:0; z-index:10;">
-  <button class="delete is-medium" style="background:rgba(255,255,255,0.3);" onclick={() => goto('/myshop')}></button>
-  <span class="has-text-white has-text-weight-bold is-size-6" style="letter-spacing:1px;">ADD PRODUCT</span>
+<div
+  class="has-background-primary px-4 py-3 is-flex is-align-items-center is-justify-content-space-between"
+  style="position:sticky; top:0; z-index:10;"
+>
+  <div class="is-flex is-align-items-center" style="gap:12px;">
+  <button
+    class="button is-ghost px-1"
+    style="color:white;"
+    onclick={() => goto('/myshop')}
+  >
+    <span class="icon"><i class="fas fa-arrow-left"></i></span>
+  </button>
+  <span class="has-text-white has-text-weight-bold is-size-6" style="letter-spacing:1px;">
+    ADD PRODUCT
+  </span>
+</div>
+  <button class="button is-small is-white is-rounded" onclick={() => goto('/settings')}>
+    <span class="icon is-small"><i class="fas fa-cog"></i></span>
+  </button>
 </div>
 
 <section class="section pt-4 pb-6">
-  <div class="container" style="max-width:480px;">
+  <div class="container" style="max-width:540px;">
 
     <!-- รูปหลัก -->
     <div class="has-text-centered mb-5">
@@ -157,57 +174,6 @@
       <label class="label is-small">TAGS <span class="has-text-danger">*</span></label>
       <div class="control">
         <input class="input" type="text" placeholder="เช่น เสื้อ, วินเทจ, Uniqlo" bind:value={tags}>
-      </div>
-    </div>
-
-    <div class="field">
-      <label class="label is-small">CHECK LIST</label>
-      <div class="is-flex" style="gap:16px; flex-wrap:wrap;">
-        <label class="checkbox is-size-7"><input type="checkbox"> Size Information</label>
-        <label class="checkbox is-size-7"><input type="checkbox"> No Flaw</label>
-        <label class="checkbox is-size-7"><input type="checkbox" bind:checked={checkFlaw}> Flaw</label>
-      </div>
-      {#if checkFlaw}
-        <div class="control mt-2">
-          <input class="input is-small" type="text" placeholder="Enter Flaw Detail" bind:value={flawDetail}>
-        </div>
-      {/if}
-    </div>
-
-    <div class="field">
-      <label class="label is-small">REQUIREMENT PHOTO</label>
-      <div class="columns is-mobile">
-        <div class="column">
-          <label class="photo-box">
-            {#if frontPreview}
-              <img src={frontPreview} alt="front" class="photo-preview">
-            {:else}
-              <span class="is-size-7 has-text-grey-light">Front View *</span>
-            {/if}
-            <input type="file" accept="image/*" onchange={handleFrontPhoto} style="display:none;">
-          </label>
-        </div>
-        <div class="column">
-          <label class="photo-box">
-            {#if backPreview}
-              <img src={backPreview} alt="back" class="photo-preview">
-            {:else}
-              <span class="is-size-7 has-text-grey-light">Back View *</span>
-            {/if}
-            <input type="file" accept="image/*" onchange={handleBackPhoto} style="display:none;">
-          </label>
-        </div>
-      </div>
-    </div>
-
-    <div class="field">
-      <label class="label is-small">ITEM CONDITION <span class="has-text-danger">*</span></label>
-      <div class="is-flex" style="flex-direction:column; gap:8px;">
-        {#each ['New with tag', 'Like new', 'Good', 'Fair'] as cond}
-          <label class="radio is-size-7">
-            <input type="radio" name="condition" value={cond} bind:group={condition}> {cond}
-          </label>
-        {/each}
       </div>
     </div>
 

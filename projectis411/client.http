@@ -98,7 +98,7 @@ POST http://127.0.0.1:8000/customers/
   "customer_phone": "0878888888"
 }
 
-###Customer เพิ่มเติม
+###Customer ใหม่
 POST http://127.0.0.1:8000/customers/
 
 [
@@ -202,4 +202,94 @@ POST http://127.0.0.1:8000/products/search
   "tags": ["หมวก"],
   "sort_by": "newest",
   "page": 1
+}
+
+# ------------------------COMMUNITY---------------------------------
+# - POSTS
+### 1. ดึงโพสต์ทั้งหมด (Feed)
+GET http://127.0.0.1:8000/posts/
+
+
+### 2. สร้างโพสต์
+
+### โพสต์ของ ลีน่าจัง (id: 4)
+POST http://127.0.0.1:8000/posts/
+
+
+{
+    "content": "เสื้อแบบนี้ใส่กับกระโปรงแบบไหนดีคะ ของแบรนด์ @littlemonday #matching #whitetop",
+    "image_url": "https://i.pinimg.com/1200x/6a/ae/d0/6aaed02da72d5373c07eaf7b69116a8b.jpg",
+    "customer_id": 4,
+    "likes": 24,
+    "reposts": 5,
+    "shares": 2
+}
+
+
+### โพสต์ของ น้องผัก (ID: 5)
+POST http://127.0.0.1:8000/posts/
+
+
+{
+    "content": "เอ้าฟิตวันนี้ค่ะ เสื้อ40 ส่วนกระโปรงยืมแม่ #ootd #vintage",
+    "image_url": "https://i.pinimg.com/736x/33/de/7e/33de7e83f418c4ff2f3f50591748f702.jpg",
+    "customer_id": 5,
+    "likes": 10,
+    "reposts": 2,
+    "shares": 1
+}
+
+
+### โพสต์ของ เย้ๆๆๆ (ID: 6)
+POST http://127.0.0.1:8000/posts/
+
+
+{
+    "content": "Y2K fit of the day 🤍 #y2k #fashion",
+    "image_url": "https://i.pinimg.com/1200x/4c/d9/79/4cd97954db08a8dc48a9bd6e59e1c378.jpg",
+    "customer_id": 6,
+    "likes": 55,
+    "reposts": 12,
+    "shares": 4
+}
+
+
+### โพสต์ของ rosie (ID: 7)
+POST http://127.0.0.1:8000/posts/
+
+
+{
+    "content": "vintage haul มาค่ะ ได้มาจากตลาดนัด #vintage #thrift",
+    "image_url": "https://i.pinimg.com/1200x/a3/14/b3/a314b3f341ba3d4e8bfee915ad6a9c0f.jpg",
+    "customer_id": 7,
+    "likes": 30,
+    "reposts": 3,
+    "shares": 2
+}
+
+### 3. ดึงรายละเอียดรายโพสต์ (พร้อมคอมเมนต์)
+# เปลี่ยนเลข 1 เป็น id ของโพสต์ที่มีจริง
+GET http://127.0.0.1:8000/posts/1
+
+# - COMMENTS
+### 4. เพิ่มคอมเมนต์ใหม่ไปยังโพสต์
+# เปลี่ยนเลข 1 ใน URL เป็น post_id 
+POST http://127.0.0.1:8000/posts/1/comments
+
+
+{
+    "customer_id": 3 ,
+    "text": "พิกัดร้านไหนคะเนี่ย สวยอ้ะ",
+    "time_str": "10:30"
+}
+
+
+### 5. เพิ่มคอมเมนต์อีกอัน (ทดสอบการวนลูป)
+POST http://127.0.0.1:8000/posts/1/comments
+
+
+{
+    "customer_id": 5,
+    "text": "ตอบเมนท์บน: ร้านแถวโซน C ค่ะ ลึกๆ หน่อย",
+    "time_str": "10:45"
 }
